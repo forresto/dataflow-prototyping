@@ -1,75 +1,81 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>connect gesture</title>
+  <title>connect gesture</title>
 
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #333;
-            width: 100%;
-            height: 100%;
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #333;
+      width: 100%;
+      height: 100%;
 
-            background-image:
-                linear-gradient(90deg, #444 1px, transparent 1px),
-                linear-gradient(#444 1px, transparent 1px);
-            background-size:50px 50px;
-        }
-        div {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        .node {
-            cursor: pointer;
-            width: 50px;
-            height: 50px;
-            background-color: rgba(255, 255, 255, 0.5);
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        .inputs {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        .node.show-ins .inputs {
-            display:block;
-        }
-        .outputs {
-            display: none;
-            position: absolute;
-            top: 0;
-            right: 0;
-        }
-        .node.show-outs .outputs {
-            display:block;
-        }
-        .port {
-            width: 50px;
-            height: 50px;
-            background-color: hsl(0, 25%, 75%);
-        }
-        /*.port:hover,*/
-        .port.active {
-            background-color: hsl(0, 25%, 50%);
-        }
-    </style>
+      background-image:
+        -moz-linear-gradient(left, #444 1px, transparent 1px),
+        -moz-linear-gradient(top, #444 1px, transparent 1px);
+      background-image:
+        -webkit-linear-gradient(left, #444 1px, transparent 1px),
+        -webkit-linear-gradient(top, #444 1px, transparent 1px);
+      background-image:
+        linear-gradient(left, #444 1px, transparent 1px),
+        linear-gradient(top, #444 1px, transparent 1px);
+      background-size:50px 50px;
+    }
+    div {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .node {
+      cursor: pointer;
+      width: 50px;
+      height: 50px;
+      background-color: rgba(255, 255, 255, 0.5);
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .inputs {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .node.show-ins .inputs {
+      display:block;
+    }
+    .outputs {
+      display: none;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+    .node.show-outs .outputs {
+      display:block;
+    }
+    .port {
+      width: 50px;
+      height: 50px;
+      background-color: hsl(0, 25%, 75%);
+    }
+    /*.port:hover,*/
+    .port.active {
+      background-color: hsl(0, 25%, 50%);
+    }
+  </style>
 
 </head>
 <body>
 
-    <div id="graph"></div>
+  <div id="graph"></div>
 
 
-    <script src="connect-gesture.js"></script>
+  <script src="connect-gesture.js"></script>
 </body>
 </html>
