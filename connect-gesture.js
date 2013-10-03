@@ -13,24 +13,26 @@ var count = 5;
 var graph = {};
 var nodes = graph.nodes = [];
 var ioMax = 5;
-var nodeW = 100;
-var nodeH = 50;
+var nodeW = 75;
+var nodeH = 75;
 var nodeW2 = Math.floor(nodeW/2);
 var nodeH2 = Math.floor(nodeH/2);
-var margin = 0;
-var gridW = Math.floor( (w-margin*2)/(nodeW+margin*2) );
-var gridH = Math.floor( (h-margin*2)/(nodeH+margin*2) );
+var margin = 10;
+var gridW = nodeW + margin*2;
+var gridH = nodeH + margin*2;
+var gridCols = Math.floor( (w-margin*2)/(nodeW+margin*2) );
+var gridRows = Math.floor( (h-margin*2)/(nodeH+margin*2) );
 
 // CSS grid bg
-document.body.style.backgroundSize = nodeW+"px "+nodeH+"px";
+document.body.style.backgroundSize = gridW+"px "+gridH+"px";
 
 var i, j, k;
 for (i=0; i<count; i++) {
   var node = {
     id: i,
     type: "node",
-    x: randomInt(gridW) * nodeW,
-    y: randomInt(gridH) * nodeH,
+    x: randomInt(gridCols),
+    y: randomInt(gridRows),
     parent: graph
   };
   node.inputs = [];
@@ -68,16 +70,24 @@ var translate = function (el, x, y, z) {
   el.style.OTransform = move;
   el.style.transform = move;
   return el;
-}
+};
+
+var translateGrid = function (el, x, y) {
+  translate(el, x*gridW+margin, y*gridH+margin)
+  return el;
+};
 
 // Make the node views
 for (i=0; i<count; i++) {
   var node = nodes[i];
   var el = node.view = document.createElement("div");
   el.classList.add("node");
-  el.innerHTML = "node"+i;
+  var label = document.createElement("h1");
+  label.innerHTML = "node"+node.id;
+  label.style.width = nodeW + "px";
+  el.appendChild( label );
   // Position
-  translate(el, node.x, node.y);
+  translateGrid(el, node.x, node.y);
   // Size
   el.style.width = nodeW + "px";
   el.style.height = nodeH + "px";
@@ -313,12 +323,12 @@ function portSelect (port) {
 // Moving helpers
 
 function nodeSnapToGrid (node, x, y) {
-  x = Math.floor( x / nodeW ) * nodeW;
-  y = Math.floor( y / nodeH ) * nodeH;
+  x = Math.floor( x / gridW );
+  y = Math.floor( y / gridH );
   if (x !== node.x || y !== node.y) {
     node.x = x;
     node.y = y;
-    translate(node.view, x, y);
+    translateGrid(node.view, x, y);
   }
 };
 
