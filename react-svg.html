@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>react + svg test</title>
+  <style>
+    rect {
+      fill: magenta;
+      stroke: black;
+      stroke-width: 2px;
+    }
+    path {
+      fill: none;
+      stroke: black;
+      stroke-width: 2px;
+    }
+  </style>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.8.0/react.js"></script>
+  <script type="text/javascript">
+
+    var NofloNode = React.createClass({
+      render: function() {
+        return (
+          React.DOM.rect({
+            x: this.props.process.metadata.x,
+            y: this.props.process.metadata.y,
+            width: 72,
+            height: 72,
+            rx: 8,
+            ry: 8
+          })
+        );
+      }
+    });
+
+    var NofloEdge = React.createClass({
+      getInitialState: function() {
+        return {
+          sourceX: this.props.source.metadata.x + 36,
+          sourceY: this.props.source.metadata.y + 36,
+          targetX: this.props.target.metadata.x + 36,
+          targetY: this.props.target.metadata.y + 36
+        };
+      },
+      componentWillMount: function() {
+        // Todo: listen for source/target moving; change state
+      },
+      render: function() {
+        var path = [
+          "M", this.state.sourceX, this.state.sourceY, 
+          "L", this.state.targetX, this.state.targetY
+        ].join(" ");
+        return (
+          React.DOM.path({
+            d: path
+          })
+        );
+      }
+    });
+
+    var NofloGraph = React.createClass({
+      render: function() {
+        var processes = this.props.graph.processes;
+        var nodeKeys = Object.keys(processes);
+        var nodes = nodeKeys.map(function (key) {
+          var process = processes[key];
+          return NofloNode({
+            name: key, 
+            process: process
+          });
+        });
+        var connections = this.props.graph.connections;
+        var edges = connections.map(function (connection) {
+          if (connection.data !== undefined) {
+            // IIP
+            return;
+          }
+          var source = processes[connection.src.process];
+          var target = processes[connection.tgt.process];
+          return NofloEdge({
+            connection: connection,
+            source: source,
+            target: target,
+          });
+        });
+        console.log(nodes, edges);
+        return (
+          React.DOM.svg(
+            {
+              name:"graph", 
+              width: 2000, 
+              height: 2000
+            },
+            React.DOM.g({
+              name:"edges",
+              children: edges
+            }),
+            React.DOM.g({
+              name:"nodes", 
+              children: nodes
+            })
+          )
+        );
+      }
+    });
+
+    window.loadGraph = function (graph) {
+      React.renderComponent(
+        NofloGraph({graph:graph}),
+        document.body
+      );
+    };
+
+    window.onload = function () {
+      var script = document.createElement('script');
+      script.src = 'react-svg-graph.json.js';
+      document.head.appendChild(script);
+    }
+
+  </script>
+
+</head>
+<body>
+
+</body>
+</html>
