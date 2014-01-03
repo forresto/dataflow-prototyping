@@ -4,7 +4,7 @@
   <title>react + svg test</title>
   <style>
     rect {
-      fill: magenta;
+      fill: hsla(0, 100%, 50%, 0.75);
       stroke: black;
       stroke-width: 2px;
     }
@@ -35,9 +35,9 @@
     var NofloEdge = React.createClass({
       getInitialState: function() {
         return {
-          sourceX: this.props.source.metadata.x + 36,
+          sourceX: this.props.source.metadata.x + 72,
           sourceY: this.props.source.metadata.y + 36,
-          targetX: this.props.target.metadata.x + 36,
+          targetX: this.props.target.metadata.x + 0,
           targetY: this.props.target.metadata.y + 36
         };
       },
@@ -45,9 +45,14 @@
         // Todo: listen for source/target moving; change state
       },
       render: function() {
+        var curve = 50;
         var path = [
-          "M", this.state.sourceX, this.state.sourceY, 
-          "L", this.state.targetX, this.state.targetY
+          "M",
+          this.state.sourceX, this.state.sourceY,
+          "C",
+          this.state.sourceX + curve, this.state.sourceY,
+          this.state.targetX - curve, this.state.targetY,
+          this.state.targetX, this.state.targetY
         ].join(" ");
         return (
           React.DOM.path({
