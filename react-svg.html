@@ -63,8 +63,13 @@
     });
 
     var NofloGraph = React.createClass({
+      getInitialState: function() {
+        return {
+          graph: this.props.graph
+        };
+      },
       render: function() {
-        var processes = this.props.graph.processes;
+        var processes = this.state.graph.processes;
         var nodeKeys = Object.keys(processes);
         var nodes = nodeKeys.map(function (key) {
           var process = processes[key];
@@ -73,7 +78,7 @@
             process: process
           });
         });
-        var connections = this.props.graph.connections;
+        var connections = this.state.graph.connections;
         var edges = connections.map(function (connection) {
           if (connection.data !== undefined) {
             // IIP
@@ -111,7 +116,7 @@
     window.loadGraph = function (graph) {
       React.renderComponent(
         NofloGraph({graph:graph}),
-        document.body
+        document.getElementById("graph")
       );
     };
 
@@ -125,6 +130,7 @@
 
 </head>
 <body>
-
+  <div id="graph"></div>
+  <div style="position:absolute; top:0; left:0;"><a href="https://github.com/forresto/prototyping/blob/gh-pages/react-svg.html">source</a></div>
 </body>
 </html>
