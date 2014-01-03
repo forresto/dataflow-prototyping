@@ -3,14 +3,28 @@
 <head>
   <title>react + svg test</title>
   <style>
-    rect {
-      fill: hsla(0, 100%, 50%, 0.75);
-      stroke: black;
-      stroke-width: 2px;
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: hsl(0, 0%, 10%);
+      font-family: monospace;
     }
-    path {
+    a {
+      color: white;
+    }
+    rect {
+      fill: hsla(0, 0%, 0%, 0.75);
+      stroke: hsl(0, 0%, 50%);
+      stroke-width: 1px;
+    }
+    path.edge-bg {
       fill: none;
       stroke: black;
+      stroke-width: 4px;
+    }
+    path.edge-fg {
+      fill: none;
+      stroke: white;
       stroke-width: 2px;
     }
   </style>
@@ -33,31 +47,35 @@
     });
 
     var NofloEdge = React.createClass({
-      getInitialState: function() {
-        return {
-          sourceX: this.props.source.metadata.x + 72,
-          sourceY: this.props.source.metadata.y + 36,
-          targetX: this.props.target.metadata.x + 0,
-          targetY: this.props.target.metadata.y + 36
-        };
-      },
       componentWillMount: function() {
         // Todo: listen for source/target moving; change state
       },
       render: function() {
+        var sourceX = this.props.source.metadata.x + 72;
+        var sourceY = this.props.source.metadata.y + 36;
+        var targetX = this.props.target.metadata.x + 0;
+        var targetY = this.props.target.metadata.y + 36;
         var curve = 50;
         var path = [
           "M",
-          this.state.sourceX, this.state.sourceY,
+          sourceX, sourceY,
           "C",
-          this.state.sourceX + curve, this.state.sourceY,
-          this.state.targetX - curve, this.state.targetY,
-          this.state.targetX, this.state.targetY
+          sourceX + curve, sourceY,
+          targetX - curve, targetY,
+          targetX, targetY
         ].join(" ");
         return (
-          React.DOM.path({
-            d: path
-          })
+          React.DOM.g(
+            {className: "edge"},
+            React.DOM.path({
+              className: "edge-bg",
+              d: path
+            }),
+            React.DOM.path({
+              className: "edge-fg",
+              d: path
+            })
+          )
         );
       }
     });
@@ -98,7 +116,7 @@
             {
               name:"graph", 
               width: 2000, 
-              height: 2000
+              height: 1500
             },
             React.DOM.g({
               name:"edges",
