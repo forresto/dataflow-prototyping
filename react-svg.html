@@ -8,9 +8,13 @@
       margin: 0;
       background-color: hsl(0, 0%, 10%);
       font-family: monospace;
+      overflow: hidden;
+      color: white;
     }
     a {
       color: white;
+    }
+    svg {
     }
     rect {
       fill: hsla(0, 0%, 0%, 0.75);
@@ -28,12 +32,15 @@
       stroke-width: 2px;
     }
     text {
+      font-size: 10px;
       fill: white;
       text-anchor: middle;
     }
   </style>
   <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.8.0/react.js"></script>
   <script type="text/javascript">
+  (function(){
+    "use strict";
 
     var NofloNode = React.createClass({
       render: function() {
@@ -100,13 +107,67 @@
     });
 
     var NofloGraph = React.createClass({
+      minZoom: 0.04,
       getInitialState: function() {
         return {
+          x: 0,
+          y: 0,
+          scale: 1,
           graph: this.props.graph
         };
       },
+      onWheel: function (event) {
+        if (this.keyPan) {
+          this.setState({
+            x: this.state.x - event.deltaX,
+            y: this.state.y + event.deltaY
+          });
+        } else {
+          var scale = this.state.scale + (this.state.scale * event.deltaY/500);
+          if (scale < this.minZoom) { return; }
+
+          // Zoom and pan transform-origin equivalent
+          var scaleD = scale / this.state.scale;
+          var currentX = this.state.x;
+          var currentY = this.state.y;
+          var oX = this.mouseX;
+          var oY = this.mouseY;
+          var x = scaleD * (currentX - oX) + oX;
+          var y = scaleD * (currentY - oY) + oY;
+
+          this.setState({
+            scale: scale,
+            x: x,
+            y: y
+          });
+        }
+      },
+      keyPan: false,
+      onKeyUpDown: function (event) {
+        // console.log(event);
+        if (event.keyCode === 32 /* space */) {
+          this.keyPan = (event.type === "keydown");
+        }
+      },
+      mouseX: 0,
+      mouseY: 0,
+      mousePressed: false,
+      onMouseDown: function (event) {
+        this.mousePressed = true;
+      },
+      onMouseMove: function (event) {
+        this.mouseX = event.pageX;
+        this.mouseY = event.pageY;
+      },
+      onMouseUp: function (event) {
+        this.mousePressed = false;
+      },
+      componentDidMount: function () {
+        window.addEventListener("keydown", this.onKeyUpDown);
+        window.addEventListener("keyup", this.onKeyUpDown);
+      },
       render: function() {
-        console.time("setup graph");
+        // Nodes
         var processes = this.state.graph.processes;
         var nodeKeys = Object.keys(processes);
         var nodes = nodeKeys.map(function (key) {
@@ -116,6 +177,8 @@
             process: process
           });
         });
+
+        // Edges
         var connections = this.state.graph.connections;
         var edges = connections.map(function (connection) {
           if (connection.data !== undefined) {
@@ -130,33 +193,59 @@
             target: target,
           });
         });
-        var svg = React.DOM.svg(
+
+        // pan and zoom
+        var sc = this.state.scale;
+        var x = this.state.x;
+        var y = this.state.y;
+        var transform = "matrix("+sc+",0,0,"+sc+","+x+","+y+")";
+
+        var app = React.DOM.div(
           {
-            name:"graph", 
+            name:"app", 
             width: 2000, 
-            height: 1500
+            height: 1500,
+            onWheel: this.onWheel,
+            onMouseDown: this.onMouseDown,
+            onMouseMove: this.onMouseMove,
+            onMouseUp: this.onMouseUp
+            // onKeyDown: this.onKeyDown,
+            // onKeyUp: this.onKeyUp,
+            // style: {
+            //   cursor: this.keyZooming ? "zoom-in" : "auto"
+            // }
           },
-          React.DOM.g({
-            name:"edges",
-            children: edges
-          }),
-          React.DOM.g({
-            name:"nodes", 
-            children: nodes
-          })
-        )
-        console.timeEnd("setup graph");
-        return svg;
+          React.DOM.svg(
+            {
+              name:"graph", 
+              width: 2000, 
+              height: 1500
+            },
+            React.DOM.g(
+              {
+                name: "view",
+                transform: transform
+              },
+              React.DOM.g({
+                name:"edges",
+                children: edges
+              }),
+              React.DOM.g({
+                name:"nodes", 
+                children: nodes
+              })
+            )
+          )
+        );
+        return app;
       }
     });
 
     window.loadGraph = function (graph) {
-      console.time("React.renderComponent");
       React.renderComponent(
         NofloGraph({graph:graph}),
-        document.getElementById("graph")
+        document.getElementById("app")
       );
-      console.timeEnd("React.renderComponent");
     };
 
     window.onload = function () {
@@ -165,11 +254,16 @@
       document.head.appendChild(script);
     }
 
+  })();
   </script>
 
 </head>
 <body>
-  <div id="graph"></div>
-  <div style="position:absolute; top:0; left:0;"><a href="https://github.com/forresto/prototyping/blob/gh-pages/react-svg.html">source</a></div>
+  <div id="app"></div>
+  <div style="position:absolute; top:0; left:0;">
+    <a href="https://github.com/forresto/prototyping/blob/gh-pages/react-svg.html">source</a><br/>
+    wheel to zoom<br/>
+    space+wheel (or drag) to pan
+  </div>
 </body>
 </html>
