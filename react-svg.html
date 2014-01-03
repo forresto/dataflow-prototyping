@@ -152,10 +152,25 @@
       mouseX: 0,
       mouseY: 0,
       mousePressed: false,
+      dragStartX: 0,
+      dragStartY: 0,
       onMouseDown: function (event) {
         this.mousePressed = true;
+        this.dragStartX = event.pageX;
+        this.dragStartY = event.pageY;
+        this.mouseX = event.pageX;
+        this.mouseY = event.pageY;
       },
       onMouseMove: function (event) {
+        // Pan
+        if (this.mousePressed) {
+          var deltaX = event.pageX - this.mouseX;
+          var deltaY = event.pageY - this.mouseY;
+          this.setState({
+            x: this.state.x + deltaX,
+            y: this.state.y + deltaY
+          });
+        }
         this.mouseX = event.pageX;
         this.mouseY = event.pageY;
       },
