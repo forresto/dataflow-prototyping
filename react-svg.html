@@ -144,6 +144,8 @@
       },
       keyPan: false,
       onKeyUpDown: function (event) {
+        // Don't scroll with space
+        event.preventDefault();
         // console.log(event);
         if (event.keyCode === 32 /* space */) {
           this.keyPan = (event.type === "keydown");
@@ -152,12 +154,8 @@
       mouseX: 0,
       mouseY: 0,
       mousePressed: false,
-      dragStartX: 0,
-      dragStartY: 0,
       onMouseDown: function (event) {
         this.mousePressed = true;
-        this.dragStartX = event.pageX;
-        this.dragStartY = event.pageY;
         this.mouseX = event.pageX;
         this.mouseY = event.pageY;
       },
@@ -180,6 +178,15 @@
       componentDidMount: function () {
         window.addEventListener("keydown", this.onKeyUpDown);
         window.addEventListener("keyup", this.onKeyUpDown);
+
+        // Mouse listen to window for drag/release outside
+        window.addEventListener("mousedown", this.onMouseDown);
+        window.addEventListener("mousemove", this.onMouseMove);
+        window.addEventListener("mouseup", this.onMouseUp);
+
+        // Start zoom from middle if zoom before mouse move
+        this.mouseX = Math.floor( window.innerWidth/2 );
+        this.mouseY = Math.floor( window.innerHeight/2 );
       },
       render: function() {
         // Nodes
@@ -220,15 +227,7 @@
             name:"app", 
             width: 2000, 
             height: 1500,
-            onWheel: this.onWheel,
-            onMouseDown: this.onMouseDown,
-            onMouseMove: this.onMouseMove,
-            onMouseUp: this.onMouseUp
-            // onKeyDown: this.onKeyDown,
-            // onKeyUp: this.onKeyUp,
-            // style: {
-            //   cursor: this.keyZooming ? "zoom-in" : "auto"
-            // }
+            onWheel: this.onWheel
           },
           React.DOM.svg(
             {
