@@ -27,21 +27,40 @@
       stroke: white;
       stroke-width: 2px;
     }
+    text {
+      fill: white;
+      text-anchor: middle;
+    }
   </style>
   <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.8.0/react.js"></script>
   <script type="text/javascript">
 
     var NofloNode = React.createClass({
       render: function() {
+        var label = this.props.process.metadata.label;
+        if (label === undefined || label === "") {
+          label = this.props.name
+        }
+        var x = this.props.process.metadata.x;
+        var y = this.props.process.metadata.y;
         return (
-          React.DOM.rect({
-            x: this.props.process.metadata.x,
-            y: this.props.process.metadata.y,
-            width: 72,
-            height: 72,
-            rx: 8,
-            ry: 8
-          })
+          React.DOM.g(
+            {
+              name: label,
+              transform: "translate("+x+","+y+")"
+            },
+            React.DOM.rect({
+              width: 72,
+              height: 72,
+              rx: 8,
+              ry: 8
+            }),
+            React.DOM.text({
+              x: 36,
+              y: 92,
+              children: label
+            })
+          )
         );
       }
     });
