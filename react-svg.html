@@ -46,7 +46,7 @@
       render: function() {
         var label = this.props.process.metadata.label;
         if (label === undefined || label === "") {
-          label = this.props.name
+          label = this.props.key
         }
         var x = this.props.process.metadata.x;
         var y = this.props.process.metadata.y;
@@ -54,6 +54,7 @@
           React.DOM.g(
             {
               name: label,
+              key: this.props.key,
               transform: "translate("+x+","+y+")"
             },
             React.DOM.rect({
@@ -195,7 +196,7 @@
         var nodes = nodeKeys.map(function (key) {
           var process = processes[key];
           return NofloNode({
-            name: key, 
+            key: key,
             process: process
           });
         });
