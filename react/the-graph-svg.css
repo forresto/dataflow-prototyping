@@ -2,10 +2,6 @@ svg.the-graph {
 }
 g.view {
 }
-rect.background {
-  /* works in ff, not chrome */
-  /*fill: url(http://localhost:3000/themes/default/grid.svg#gridpattern);*/
-}
 g.nodes rect {
   fill: hsla(0, 0%, 0%, 0.75);
   stroke: hsl(0, 0%, 50%);
@@ -27,6 +23,22 @@ text {
   font-size: 14px;
   fill: white;
   text-anchor: middle;
+}
+
+g.port circle {
+  fill: black;
+  stroke: hsl(0, 0%, 50%);
+  stroke-width: 1px;
+}
+g.port text {
+  font-size: 6px;
+  alignment-baseline: middle;
+}
+g.inports text {
+  text-anchor: start;  
+}
+g.outports text {
+  text-anchor: end;  
 }
 
 g.route0  path.edge-fg { stroke: hsl( 10, 100%, 100%); }

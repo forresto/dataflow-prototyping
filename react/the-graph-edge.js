@@ -1,8 +1,6 @@
 (function (context) {
   "use strict";
 
-  // Boilerplate module setup
-  if (!context.TheGraph) { context.TheGraph = {}; }
   var TheGraph = context.TheGraph;
 
 
@@ -13,10 +11,10 @@
       // Todo: listen for source/target moving; change state
     },
     render: function() {
-      var sourceX = this.props.source.metadata.x + 72;
-      var sourceY = this.props.source.metadata.y + 8 + this.props.ports.source.index*15;
+      var sourceX = this.props.source.metadata.x + TheGraph.nodeSize;
+      var sourceY = this.props.source.metadata.y + TheGraph.nodeSize/2;
       var targetX = this.props.target.metadata.x + 0;
-      var targetY = this.props.target.metadata.y + 8 + this.props.ports.target.index*15;
+      var targetY = this.props.target.metadata.y + TheGraph.nodeSize/2;
       var curve = 50;
       var path = [
         "M",

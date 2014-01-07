@@ -2,64 +2,27 @@
   "use strict";
 
   // Boilerplate module setup
-  if (!context.TheGraph) { context.TheGraph = {}; }
+  if (!context.TheGraph) { 
+    context.TheGraph = {
+      nodeSize: 72,
+      nodeRadius: 8,
+      nodeSide: 56
+    }; 
+  }
   var TheGraph = context.TheGraph;
 
 
-  var ports = {};
+  // Interactions
 
-  var getPorts = function (sourceProcess, sourcePort, targetProcess, targetPort) {
-    var inport, outport;
-
-    if (!ports[sourceProcess]) {
-      ports[sourceProcess] = {
-        inports: {length:0},
-        outports: {length:0}
-      };
-    }
-    outport = ports[sourceProcess].outports[sourcePort];
-    if (!outport) {
-      outport = {
-        id: sourcePort,
-        index: ports[sourceProcess].outports.length
-      };
-      ports[sourceProcess].outports[sourcePort] = outport;
-      ports[sourceProcess].outports.length++;
-    }
-    if (!ports[targetProcess]) {
-      ports[targetProcess] = {
-        inports: {length:0},
-        outports: {length:0}
-      };
-    }
-    inport = ports[targetProcess].inports[targetPort];
-    if (!inport) {
-      inport = {
-        id: targetPort,
-        index: ports[targetProcess].inports.length
-      };
-      ports[targetProcess].inports[targetPort] = inport;
-      ports[targetProcess].inports.length++;
-    }
-
-    return {
-      source: outport,
-      target: inport
-    };
-
-  };
-
-
-  // Graph view
-
-  TheGraph.Graph = React.createClass({
+  TheGraph.App = React.createClass({
     minZoom: 0.04,
     getInitialState: function() {
       return {
         x: 0,
         y: 0,
         scale: 1,
-        graph: this.props.graph
+        width: this.props.width,
+        height: this.props.height
       };
     },
     onWheel: function (event) {
@@ -93,10 +56,10 @@
     },
     keyPan: false,
     onKeyUpDown: function (event) {
-      // Don't scroll with space
-      event.preventDefault();
       // console.log(event);
       if (event.keyCode === 32 /* space */) {
+        // Don't scroll with space
+        event.preventDefault();
         this.keyPan = (event.type === "keydown");
       }
     },
@@ -139,14 +102,74 @@
       this.mouseY = Math.floor( window.innerHeight/2 );
     },
     render: function() {
+      // pan and zoom
+      var sc = this.state.scale;
+      var x = this.state.x;
+      var y = this.state.y;
+      var transform = "matrix("+sc+",0,0,"+sc+","+x+","+y+")";
+
+      return React.DOM.div(
+        {
+          name:"app", 
+          onWheel: this.onWheel
+        },
+        React.DOM.svg(
+          {
+            width: this.state.width, 
+            height: this.state.height
+          },
+          React.DOM.g(
+            {
+              className: "view",
+              transform: transform
+            },
+            TheGraph.Graph({graph: this.props.graph})
+          )
+        )
+      );
+    }
+  });
+
+
+  // Graph view
+
+  TheGraph.Graph = React.createClass({
+    getInitialState: function() {
+      return {
+        graph: this.props.graph
+      };
+    },
+    ports: {},
+    addPorts: function (sourceProcess, sourcePort, targetProcess, targetPort) {
+      var outportIndex = this.ports[sourceProcess].outports.indexOf(sourcePort);
+      if (outportIndex === -1) {
+        this.ports[sourceProcess].outports.push(sourcePort);
+      }
+      var inportIndex = this.ports[targetProcess].inports.indexOf(targetPort);
+      if (inportIndex === -1) {
+        this.ports[targetProcess].inports.push(targetPort);
+      }
+    },
+    getPorts: function (process) {
+      if (!this.ports[process]) {
+        this.ports[process] = {
+          inports: [],
+          outports: []
+        };
+      }
+      return this.ports[process];
+    },
+    render: function() {
+      var self = this;
+
       // Nodes
       var processes = this.state.graph.processes;
-      var nodeKeys = Object.keys(processes);
-      var nodes = nodeKeys.map(function (key) {
+      var nodes = Object.keys(processes).map(function (key) {
         var process = processes[key];
         return TheGraph.Node({
           key: key,
-          process: process
+          process: process,
+          ports: self.getPorts(key)
         });
       });
 
@@ -163,8 +186,8 @@
           throw new Error("Edge source or target not found.");
         }
 
-        // Ports
-        var ports = getPorts(connection.src.process, connection.src.port, connection.tgt.process, connection.tgt.port);
+        // Initial ports from edges
+        self.addPorts(connection.src.process, connection.src.port, connection.tgt.process, connection.tgt.port);
 
         var route;
         if (connection.metadata && connection.metadata.route) {
@@ -175,43 +198,22 @@
         return TheGraph.Edge({
           source: source,
           target: target,
-          ports: ports,
           route: route
         });
       });
 
-      // pan and zoom
-      var sc = this.state.scale;
-      var x = this.state.x;
-      var y = this.state.y;
-      var transform = "matrix("+sc+",0,0,"+sc+","+x+","+y+")";
-
-      var group = React.DOM.div(
+      var group = React.DOM.g(
         {
-          name:"app", 
-          onWheel: this.onWheel
+          className: "graph"
         },
-        React.DOM.svg(
-          {
-            className: "graph", 
-            width: this.props.width, 
-            height: this.props.height
-          },
-          React.DOM.g(
-            {
-              className: "view",
-              transform: transform
-            },
-            React.DOM.g({
-              className: "edges",
-              children: edges
-            }),
-            React.DOM.g({
-              className: "nodes", 
-              children: nodes
-            })
-          )
-        )
+        React.DOM.g({
+          className: "edges",
+          children: edges
+        }),
+        React.DOM.g({
+          className: "nodes", 
+          children: nodes
+        })
       );
       return group;
     }

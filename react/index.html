@@ -21,24 +21,27 @@
   <script src="the-graph.js"></script>
   <script src="the-graph-edge.js"></script>
   <script src="the-graph-node.js"></script>
-  <!-- <script src="the-graph-port.js"></script> -->
+  <script src="the-graph-port.js"></script>
 
   <script type="text/javascript">
   (function(){
     "use strict";
 
     window.loadGraph = function (graph) {
-      React.renderComponent(
-        TheGraph.Graph({graph:graph}),
+      var app = React.renderComponent(
+        TheGraph.App({
+          graph: graph,
+          width: window.innerWidth,
+          height: window.innerHeight
+        }),
         document.getElementById('app')
       );
 
       window.addEventListener('resize', function(){
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-        var svg = document.querySelector("svg");
-        svg.style.width = width+"px";
-        svg.style.height = height+"px";
+        app.setState({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
       });
     };
 
@@ -55,7 +58,7 @@
 <body>
   <div id="app"></div>
   <div style="position:absolute; top:0; left:0;">
-    <a href="https://github.com/forresto/prototyping/blob/gh-pages/react-svg.html">source</a><br/>
+    <a href="https://github.com/forresto/prototyping/blob/gh-pages/react/">source</a><br/>
     wheel to zoom<br/>
     drag to pan
   </div>

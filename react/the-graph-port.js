@@ -1,8 +1,6 @@
 (function (context) {
   "use strict";
 
-  // Boilerplate module setup
-  if (!context.TheGraph) { context.TheGraph = {}; }
   var TheGraph = context.TheGraph;
 
 
@@ -13,7 +11,18 @@
       return (
         React.DOM.g(
           {
+            className: "port"
           },
+          React.DOM.circle({
+            cx: this.props.x,
+            cy: this.props.y,
+            r: 4
+          }),
+          React.DOM.text({
+            x: this.props.x,
+            y: this.props.y,
+            children: this.props.label
+          })
         )
       );
     }
