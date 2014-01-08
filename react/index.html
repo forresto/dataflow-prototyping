@@ -22,12 +22,16 @@
   <script src="the-graph-edge.js"></script>
   <script src="the-graph-node.js"></script>
   <!-- <script src="the-graph-port.js"></script> -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="../kieler-interface.js"></script>
 
   <script type="text/javascript">
   (function(){
     "use strict";
 
     window.loadGraph = function (graph) {
+      console.log(kieler(graph, function (foo) { console.log('RENDERING!', foo); }));
+
       React.renderComponent(
         TheGraph.Graph({graph:graph}),
         document.getElementById('app')
