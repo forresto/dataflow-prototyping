@@ -12,9 +12,9 @@
     },
     render: function() {
       var sourceX = this.props.source.metadata.x + TheGraph.nodeSize;
-      var sourceY = this.props.source.metadata.y + TheGraph.nodeSize/2;
+      var sourceY = this.props.source.metadata.y + this.props.sourcePort.y;
       var targetX = this.props.target.metadata.x + 0;
-      var targetY = this.props.target.metadata.y + TheGraph.nodeSize/2;
+      var targetY = this.props.target.metadata.y + this.props.targetPort.y;
       var curve = 50;
       var path = [
         "M",

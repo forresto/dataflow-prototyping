@@ -3,10 +3,18 @@
 
   var TheGraph = context.TheGraph;
 
+  // Font Awesome
+  var faKeys = Object.keys(TheGraph.FONT_AWESOME);
 
   // Node view
 
   TheGraph.Node = React.createClass({
+    getInitialState: function() {
+      return {
+        // Random icon just for fun
+        icon: faKeys[ Math.floor(Math.random()*faKeys.length) ]
+      };
+    },
     render: function() {
       var label = this.props.process.metadata.label;
       if (label === undefined || label === "") {
@@ -18,24 +26,18 @@
       // Ports
       var count = this.props.ports.inports.length;
       var index = 0;
-      var inports = this.props.ports.inports.map(function(name){
+      var inports = this.props.ports.inports.map(function(info){
         index++;
-        return TheGraph.Port({
-          x: 0,
-          y: TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * index),
-          label: name
-        })
+        info.y = TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * index);
+        return TheGraph.Port(info);
       });
 
       count = this.props.ports.outports.length;
       index = 0;
-      var outports = this.props.ports.outports.map(function(name){
+      var outports = this.props.ports.outports.map(function(info){
         index++;
-        return TheGraph.Port({
-          x: TheGraph.nodeSize,
-          y: TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * index),
-          label: name
-        })
+        info.y = TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * index);
+        return TheGraph.Port(info);
       });
 
       return (
@@ -51,6 +53,12 @@
             rx: 8,
             ry: 8
           }),
+          React.DOM.text({
+            className: "icon",
+            x: TheGraph.nodeSize/2,
+            y: TheGraph.nodeSize/2,
+            children: TheGraph.FONT_AWESOME[this.state.icon]
+          }),
           React.DOM.g({
             className: "inports",
             children: inports
@@ -60,6 +68,7 @@
             children: outports
           }),
           React.DOM.text({
+            className: "title",
             x: 36,
             y: 92,
             children: label

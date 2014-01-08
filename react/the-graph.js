@@ -1,7 +1,7 @@
 (function (context) {
   "use strict";
 
-  // Boilerplate module setup
+  // Dumb module setup
   if (!context.TheGraph) { 
     context.TheGraph = {
       nodeSize: 72,
@@ -108,8 +108,12 @@
       var y = this.state.y;
       var transform = "matrix("+sc+",0,0,"+sc+","+x+","+y+")";
 
+      var scaleClass = sc > 1.2 ? "big" : ( sc < 0.4 ? "small" : "normal");
+      console.log(scaleClass);
+
       return React.DOM.div(
         {
+          className: "the-graph " + scaleClass,
           name:"app", 
           onWheel: this.onWheel
         },
@@ -140,20 +144,40 @@
       };
     },
     ports: {},
-    addPorts: function (sourceProcess, sourcePort, targetProcess, targetPort) {
-      var outportIndex = this.ports[sourceProcess].outports.indexOf(sourcePort);
-      if (outportIndex === -1) {
-        this.ports[sourceProcess].outports.push(sourcePort);
+    getOutport: function (processName, portName) {
+      var ports = this.ports[processName];
+      var outport = ports.outports[ ports.outportKeys.indexOf(portName) ];
+      if ( !outport ) {
+        outport = {
+          label: portName,
+          x: TheGraph.nodeSize,
+          y: TheGraph.nodeSize/2
+        };
+        ports.outportKeys.push(portName);
+        ports.outports.push(outport);
       }
-      var inportIndex = this.ports[targetProcess].inports.indexOf(targetPort);
-      if (inportIndex === -1) {
-        this.ports[targetProcess].inports.push(targetPort);
+      return outport;
+    },
+    getInport: function (processName, portName) {
+      var ports = this.ports[processName];
+      var inport = ports.inports[ ports.inportKeys.indexOf(portName) ];
+      if ( !inport ) {
+        inport = {
+          label: portName,
+          x: 0,
+          y: TheGraph.nodeSize/2
+        };
+        ports.inportKeys.push(portName);
+        ports.inports.push(inport);
       }
+      return inport;
     },
     getPorts: function (process) {
       if (!this.ports[process]) {
         this.ports[process] = {
+          inportKeys: [],
           inports: [],
+          outportKeys: [],
           outports: []
         };
       }
@@ -169,7 +193,8 @@
         return TheGraph.Node({
           key: key,
           process: process,
-          ports: self.getPorts(key)
+          // This might not be pure, since these objects change later in this function
+          ports: self.getPorts(key) 
         });
       });
 
@@ -187,7 +212,8 @@
         }
 
         // Initial ports from edges
-        self.addPorts(connection.src.process, connection.src.port, connection.tgt.process, connection.tgt.port);
+        var sourcePort = self.getOutport(connection.src.process, connection.src.port);
+        var targetPort = self.getInport(connection.tgt.process, connection.tgt.port);
 
         var route;
         if (connection.metadata && connection.metadata.route) {
@@ -197,7 +223,9 @@
         }
         return TheGraph.Edge({
           source: source,
+          sourcePort: sourcePort,
           target: target,
+          targetPort: targetPort,
           route: route
         });
       });
