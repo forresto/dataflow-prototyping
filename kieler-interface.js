@@ -3,7 +3,6 @@
 
   // from kielerlayout.js
   var kielerLayout = function(opts) {
-
     // gather information
     var server = opts.server || "http://localhost:9444";
     var graph = opts.graph;
@@ -33,8 +32,7 @@
     });
   };
 
-
-
+  // encode the original NoFlo graph to a KGraph (KIELER Graph) JSON
   var toKieler = function (graph) {
     var kGraph = {id: "root", children: [], edges: []};
 
@@ -66,12 +64,11 @@
     return kGraph;
   };
 
+  // encode the original NoFlo graph and annotate it with layout info from
+  // the received KIELER graph
   var toNoFlo = function (oGraph, kGraph) {
-    // take the original noflo's graph (oGraph) and annotate it with layout info
-    // from kieler's graph (kGraph)
-    // console.log('ORIGINAL GRAPH', oGraph);
-    // console.log('KGRAPH', $.parseJSON(kGraph)[0]);
     kGraph = $.parseJSON(kGraph)[0];
+
     // update oGraph nodes with the new coordinates from KIELER layout
     var processes = oGraph.processes;
     var nodeKeys = Object.keys(processes);
@@ -86,10 +83,12 @@
       process.metadata.x = kNode.x;
       process.metadata.y = kNode.y;
     });
-    console.log(oGraph);
-    // update oGraph edges (and ports) as well
+    // TODO: update oGraph edges (and ports) as well
+    return oGraph;
   };
-       
+
+  // main interface for now: apply KIELER layout algorithm and render when xhr
+  // is done
   window.kieler = function (graph, render) {
     var kGraph = toKieler(graph);
 
@@ -117,11 +116,5 @@
       }
     });
   };
-
-  // window.onload = function () {
-  //   var script = document.createElement('script');
-  //   script.src = 'noflo.json.js';
-  //   document.head.appendChild(script);
-  // };
 
 })();

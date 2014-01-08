@@ -36,14 +36,16 @@
       var width = window.innerWidth;
       var height = window.innerHeight;
 
-      var app = React.renderComponent(
-        TheGraph.App({
-          graph: graph,
-          width: width,
-          height: height
-        }),
-        document.getElementById('app')
-      );
+      var app = kieler(graph, function () {
+        React.renderComponent(
+          TheGraph.App({
+            graph: graph,
+            width: width,
+            height: height
+          }),
+          document.getElementById('app')
+        )
+      });
 
       window.addEventListener('resize', function(){
         width = window.innerWidth;
