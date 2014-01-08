@@ -51,16 +51,17 @@
         });
       });
 
-      var zoom = document.getElementById("zoom")
-      zoom.onmousemove = function (event) {
-        // Don't drag
-        event.stopPropagation();
-      };
-      zoom.addEventListener("input", function(event){
-        app.setState({
-          scale: parseFloat(event.target.value)
-        });
-      });
+      // var zoom = document.getElementById("zoom")
+      // zoom.onmousemove = function (event) {
+      //   // Don't drag
+      //   event.stopPropagation();
+      // };
+      // zoom.addEventListener("input", function(event){
+      //   app.setState({
+      //     scale: parseFloat(event.target.value)
+      //   });
+      // });
+      
     };
 
     window.onload = function () {
@@ -78,7 +79,7 @@
   <div style="position:absolute; top:0; left:0;">
     <a href="https://github.com/forresto/prototyping/blob/gh-pages/react/">source</a><br/>
     wheel to zoom<br/>
-    <input id="zoom" type="range" min="0.04" max="8" step="0.01" value="1.0"></input><br/>
+    <!-- <input id="zoom" type="range" min="0.04" max="8" step="0.01" value="1.0"></input><br/> -->
     drag to pan
   </div>
 </body>
