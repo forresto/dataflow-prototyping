@@ -154,6 +154,8 @@
         };
         ports.outportKeys.push(portName);
         ports.outports.push(outport);
+
+        this.dirty = true;
       }
       return outport;
     },
@@ -168,6 +170,8 @@
         };
         ports.inportKeys.push(portName);
         ports.inports.push(inport);
+
+        this.dirty = true;
       }
       return inport;
     },
@@ -179,10 +183,20 @@
           outportKeys: [],
           outports: []
         };
+
+        this.dirty = true;
       }
       return this.ports[process];
     },
+    dirty: false,
+    shouldComponentUpdate: function () {
+      // If ports change or nodes move, then edges need to rerender
+      return this.dirty;
+    },
     render: function() {
+      console.time("graphRender");
+      this.dirty = false;
+
       var self = this;
 
       // Nodes
@@ -242,6 +256,7 @@
           children: nodes
         })
       );
+      console.timeEnd("graphRender");
       return group;
     }
   });  
