@@ -1,16 +1,34 @@
-svg.the-graph {
+@font-face {
+  /* we want the svg version */
+  font-family: 'FontAwesome';
+  src: url('//netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.svg?v=4.0.3#fontawesomeregular') format('svg'),
+    url('//netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.eot?#iefix&v=4.0.3') format('embedded-opentype'), 
+    url('//netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.woff?v=4.0.3') format('woff'), 
+    url('//netdna.bootstrapcdn.com/font-awesome/4.0.3/fonts/fontawesome-webfont.ttf?v=4.0.3') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+svg {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 g.view {
-}
-rect.background {
-  /* works in ff, not chrome */
-  /*fill: url(http://localhost:3000/themes/default/grid.svg#gridpattern);*/
 }
 g.nodes rect {
   fill: hsla(0, 0%, 0%, 0.75);
   stroke: hsl(0, 0%, 50%);
   stroke-width: 2px;
 }
+.small g.nodes rect {
+  fill: hsla(0, 0%, 25%, 0.5);
+  stroke: none;
+}
+
 path.edge-bg {
   fill: none;
   stroke: black;
@@ -21,13 +39,62 @@ path.edge-fg {
   stroke: white;
   stroke-width: 2px;
 }
+.small path.edge-bg {
+  stroke-width: 8px;
+}
+.small path.edge-fg {
+  stroke-width: 4px;
+}
+
 text {
   font-family: "SourceCodePro", "Source Code Pro", Helvetica, Arial, sans-serif;
   text-rendering: geometricPrecision; /* makes text scale smoothly */
   font-size: 14px;
   fill: white;
   text-anchor: middle;
+  cursor: default;
 }
+
+.small text.title {
+  visibility: hidden;
+}
+
+text.icon {
+  font-family: 'FontAwesome';
+  font-size: 40px;
+  fill: hsl(0, 0%, 75%);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.small text.icon {
+  fill: hsl(0, 0%, 100%);
+  font-size: 68px;
+}
+.big text.icon {
+  fill: hsl(0, 0%, 25%);
+}
+
+g.port circle {
+  fill: black;
+  stroke: hsl(0, 0%, 50%);
+  stroke-width: 1px;
+}
+g.port text {
+  visibility: hidden;
+  font-size: 6px;
+  alignment-baseline: middle;
+}
+
+g.inports text {
+  text-anchor: start;  
+}
+g.outports text {
+  text-anchor: end;  
+}
+.big g.port text {
+  visibility: visible;
+}
+
 
 g.route0  path.edge-fg { stroke: hsl( 10, 100%, 100%); }
 g.route1  path.edge-fg { stroke: hsl( 10, 100%, 70% ); }

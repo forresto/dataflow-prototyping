@@ -18,10 +18,13 @@
   <link rel="stylesheet" href="the-graph-svg.css">
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.8.0/react.js"></script>
+
   <script src="the-graph.js"></script>
   <script src="the-graph-edge.js"></script>
+  <script src="font-awesome-unicode-map.js"></script>
   <script src="the-graph-node.js"></script>
-  <!-- <script src="the-graph-port.js"></script> -->
+  <script src="the-graph-port.js"></script>
+
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <script src="../kieler-interface.js"></script>
 
@@ -30,20 +33,38 @@
     "use strict";
 
     window.loadGraph = function (graph) {
-      console.log(kieler(graph, function (foo) { console.log('RENDERING!', foo); }));
+      var width = window.innerWidth;
+      var height = window.innerHeight;
 
-      React.renderComponent(
-        TheGraph.Graph({graph:graph}),
+      var app = React.renderComponent(
+        TheGraph.App({
+          graph: graph,
+          width: width,
+          height: height
+        }),
         document.getElementById('app')
       );
 
       window.addEventListener('resize', function(){
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-        var svg = document.querySelector("svg");
-        svg.style.width = width+"px";
-        svg.style.height = height+"px";
+        width = window.innerWidth;
+        height = window.innerHeight;
+        app.setState({
+          width: width,
+          height: height
+        });
       });
+
+      // var zoom = document.getElementById("zoom")
+      // zoom.onmousemove = function (event) {
+      //   // Don't drag
+      //   event.stopPropagation();
+      // };
+      // zoom.addEventListener("input", function(event){
+      //   app.setState({
+      //     scale: parseFloat(event.target.value)
+      //   });
+      // });
+      
     };
 
     window.onload = function () {
@@ -59,8 +80,9 @@
 <body>
   <div id="app"></div>
   <div style="position:absolute; top:0; left:0;">
-    <a href="https://github.com/forresto/prototyping/blob/gh-pages/react-svg.html">source</a><br/>
+    <a href="https://github.com/forresto/prototyping/blob/gh-pages/react/">source</a><br/>
     wheel to zoom<br/>
+    <!-- <input id="zoom" type="range" min="0.04" max="8" step="0.01" value="1.0"></input><br/> -->
     drag to pan
   </div>
 </body>
