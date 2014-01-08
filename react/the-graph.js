@@ -109,7 +109,6 @@
       var transform = "matrix("+sc+",0,0,"+sc+","+x+","+y+")";
 
       var scaleClass = sc > 1.2 ? "big" : ( sc < 0.4 ? "small" : "normal");
-      console.log(scaleClass);
 
       return React.DOM.div(
         {
