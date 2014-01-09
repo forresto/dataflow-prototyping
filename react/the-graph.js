@@ -20,7 +20,9 @@
       return {
         x: 0,
         y: 0,
-        scale: 0.7,
+        inertiaX: 0,
+        inertiaY: 0,
+        scale: 1,
         width: this.props.width,
         height: this.props.height
       };
@@ -42,8 +44,8 @@
         var scaleD = scale / this.state.scale;
         var currentX = this.state.x;
         var currentY = this.state.y;
-        var oX = this.mouseX;
-        var oY = this.mouseY;
+        var oX = event.nativeEvent.pageX;
+        var oY = event.nativeEvent.pageY;
         var x = scaleD * (currentX - oX) + oX;
         var y = scaleD * (currentY - oY) + oY;
 
@@ -66,9 +68,7 @@
     mouseX: 0,
     mouseY: 0,
     mousePressed: false,
-    draggingElement: null,
     onMouseDown: function (event) {
-      console.log(event.target);
       this.mousePressed = true;
       this.mouseX = event.pageX;
       this.mouseY = event.pageY;
@@ -82,15 +82,28 @@
           x: this.state.x + deltaX,
           y: this.state.y + deltaY
         });
+        this.mouseX = event.pageX;
+        this.mouseY = event.pageY;
       }
-      this.mouseX = event.pageX;
-      this.mouseY = event.pageY;
     },
     onMouseUp: function (event) {
+      // // Inertia
+      // if (this.mousePressed) {
+      //   this.setState({
+      //     inertiaX: event.pageX - this.mouseX,
+      //     inertiaY: event.pageY - this.mouseY
+      //   });
+      // }
       this.mousePressed = false;
-      this.draggingElement = null;
     },
-    componentDidMount: function () {
+    panInertia: function (x, y) {
+      console.log(x,y);
+      if (x < 4 || y < 4) { return; }
+
+
+      setTimeout( this.panInertia.apply(this, x/2, y/2), 20);
+    },
+    componentDidMount: function (rootNode) {
       window.addEventListener("keydown", this.onKeyUpDown);
       window.addEventListener("keyup", this.onKeyUpDown);
 
@@ -102,6 +115,20 @@
       // Start zoom from middle if zoom before mouse move
       this.mouseX = Math.floor( window.innerWidth/2 );
       this.mouseY = Math.floor( window.innerHeight/2 );
+    },
+    // panFriction: 1.01,
+    componentDidUpdate: function (prevProps, prevState, rootNode) {
+      // console.log(this.state.inertiaX, this.state.inertiaY);
+      // if ( Math.abs(this.state.inertiaX) > 1 || Math.abs(this.state.inertiaY) > 1 ) {
+      //   var deltaX = this.state.inertiaX / this.panFriction;
+      //   var deltaY = this.state.inertiaY / this.panFriction;
+      //   this.setState({
+      //     x: this.state.x + deltaX,
+      //     y: this.state.y + deltaY,
+      //     inertiaX: deltaX,
+      //     inertiaY: deltaY
+      //   });
+      // }
     },
     render: function() {
       // pan and zoom
@@ -244,9 +271,10 @@
       this.dirty = false;
 
       var self = this;
+      var graph = this.state.graph;
 
       // Nodes
-      var processes = this.state.graph.processes;
+      var processes = graph.processes;
       var nodes = Object.keys(processes).map(function (key) {
         var process = processes[key];
         return TheGraph.Node({
@@ -257,8 +285,45 @@
         });
       });
 
+      // Groups
+      var groups = graph.groups.map(function (group) {
+        if (group.processes.length < 1) {
+          return;
+        }
+        var minX = Infinity;
+        var minY = Infinity;
+        var maxX = -Infinity;
+        var maxY = -Infinity;
+        var members = group.processes.map(function(key){
+          var process = graph.processes[key];
+          if (!process) {
+            throw new Error("Didn't find group member "+key+" when making group "+group.id);
+          }
+          if (process.metadata.x < minX) { minX = process.metadata.x; }
+          if (process.metadata.y < minY) { minY = process.metadata.y; }
+          if (process.metadata.x > maxX) { maxX = process.metadata.x; }
+          if (process.metadata.y > maxY) { maxY = process.metadata.y; }
+          return process;
+        });
+        if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) {
+          minX = 0;
+          minY = 0;
+          maxX = 0;
+          maxY = 0;
+          return;
+        }
+        return TheGraph.Group({
+          minX: minX,
+          minY: minY,
+          maxX: maxX,
+          maxY: maxY,
+          label: group.metadata.label,
+          description: group.metadata.description
+        });
+      });
+
       // Edges
-      var connections = this.state.graph.connections;
+      var connections = graph.connections;
       var edges = connections.map(function (connection) {
         if (connection.data !== undefined) {
           // IIP
@@ -289,11 +354,15 @@
         });
       });
 
-      var group = React.DOM.g(
+      return React.DOM.g(
         {
           className: "graph",
           onMouseDown: this.onMouseDown
         },
+        React.DOM.g({
+          className: "groups",
+          children: groups
+        }),
         React.DOM.g({
           className: "edges",
           children: edges
@@ -303,8 +372,6 @@
           children: nodes
         })
       );
-
-      return group;
     }
   });  
 

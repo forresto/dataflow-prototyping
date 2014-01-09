@@ -96,6 +96,18 @@ g.outports text {
 }
 
 
+.group-box {
+  fill: hsla(60, 100%, 40%, 0.25);
+}
+
+.group-label {
+  dominant-baseline: top;
+  text-anchor: start;  
+  fill: white;
+  font-size: 20px;
+}
+
+
 g.route0  path.edge-fg { stroke: hsl( 10, 100%, 100%); }
 g.route1  path.edge-fg { stroke: hsl( 10, 100%, 70% ); }
 g.route2  path.edge-fg { stroke: hsl( 30, 100%, 70% ); }

@@ -48,7 +48,7 @@
             transform: "translate("+x+","+y+")"
           },
           React.DOM.rect({
-            name: this.props.key, // name makes draggable
+            name: this.props.key, // name makes it draggable
             width: 72,
             height: 72,
             rx: 8,
@@ -70,7 +70,6 @@
             children: outports
           }),
           React.DOM.text({
-            name: this.props.key,
             className: "title",
             x: 36,
             y: 92,

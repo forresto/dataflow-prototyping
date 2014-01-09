@@ -14,9 +14,12 @@ loadGraph({
   "exports": [],
   "groups": [
     {
-      "name": "elements", 
-      "nodes": ["dom/GetElement_f4nkd", "dom/GetElement_z64xf", "dom/GetElement_ah82a", "dom/GetElement_85so0", "dom/GetElement_e16dy"],
-      "metadata": {"label": "elements"}
+      "id": "xyz", 
+      "processes": ["dom/GetElement_f4nkd", "dom/GetElement_z64xf", "dom/GetElement_ah82a", "dom/GetElement_85so0", "dom/GetElement_e16dy"],
+      "metadata": {
+        "label": "elements",
+        "description": "get the elements from the dom"
+      }
     }
   ],
   "processes": {
