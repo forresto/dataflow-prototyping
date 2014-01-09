@@ -20,7 +20,7 @@
       return {
         x: 0,
         y: 0,
-        scale: 1,
+        scale: 0.7,
         width: this.props.width,
         height: this.props.height
       };
@@ -68,6 +68,7 @@
     mousePressed: false,
     draggingElement: null,
     onMouseDown: function (event) {
+      console.log(event.target);
       this.mousePressed = true;
       this.mouseX = event.pageX;
       this.mouseY = event.pageY;
@@ -87,6 +88,7 @@
     },
     onMouseUp: function (event) {
       this.mousePressed = false;
+      this.draggingElement = null;
     },
     componentDidMount: function () {
       window.addEventListener("keydown", this.onKeyUpDown);
@@ -126,7 +128,10 @@
               className: "view",
               transform: transform
             },
-            TheGraph.Graph({graph: this.props.graph})
+            TheGraph.Graph({
+              graph: this.props.graph,
+              scale: this.state.scale
+            })
           )
         )
       );
@@ -190,11 +195,52 @@
     },
     dirty: false,
     shouldComponentUpdate: function () {
-      // If ports change or nodes move, then edges need to rerender
+      // If ports change or nodes move, then edges need to rerender, so we do the whole graph
       return this.dirty;
     },
+    dragItemKey: null,
+    mouseX: 0,
+    mouseY: 0,
+    onMouseDown: function (event) {
+      // Don't drag graph
+      event.stopPropagation();
+      this.dragItemKey = event.target.getAttribute("name");
+      if (this.dragItemKey) {
+        this.mouseX = event.pageX;
+        this.mouseY = event.pageY;
+      }
+    },
+    onMouseMove: function (event) {
+      if (this.dragItemKey) {
+        // Don't fire on graph
+        event.stopPropagation();
+        var process = this.state.graph.processes[this.dragItemKey];
+        if (process) {
+          var deltaX = Math.round( (event.pageX - this.mouseX) / this.props.scale );
+          var deltaY = Math.round( (event.pageY - this.mouseY) / this.props.scale );
+          process.metadata.x += deltaX;
+          process.metadata.y += deltaY;
+          this.mouseX = event.pageX;
+          this.mouseY = event.pageY;
+
+          this.setState({graph: this.state.graph});
+          this.dirty = true;
+        }
+      }
+    },
+    onMouseUp: function (event) {
+      if (this.dragItemKey) {
+        // Don't fire on graph
+        event.stopPropagation();
+        this.dragItemKey = null;
+      }
+    },
+    componentDidMount: function () {
+      // Mouse listen to window for drag/release outside
+      window.addEventListener("mousemove", this.onMouseMove);
+      window.addEventListener("mouseup", this.onMouseUp);
+    },
     render: function() {
-      console.time("graphRender");
       this.dirty = false;
 
       var self = this;
@@ -245,7 +291,8 @@
 
       var group = React.DOM.g(
         {
-          className: "graph"
+          className: "graph",
+          onMouseDown: this.onMouseDown
         },
         React.DOM.g({
           className: "edges",
@@ -256,7 +303,7 @@
           children: nodes
         })
       );
-      console.timeEnd("graphRender");
+
       return group;
     }
   });  

@@ -43,17 +43,19 @@
       return (
         React.DOM.g(
           {
-            name: label,
+            name: this.props.key,
             key: this.props.key,
             transform: "translate("+x+","+y+")"
           },
           React.DOM.rect({
+            name: this.props.key, // name makes draggable
             width: 72,
             height: 72,
             rx: 8,
             ry: 8
           }),
           React.DOM.text({
+            name: this.props.key,
             className: "icon",
             x: TheGraph.nodeSize/2,
             y: TheGraph.nodeSize/2,
@@ -68,6 +70,7 @@
             children: outports
           }),
           React.DOM.text({
+            name: this.props.key,
             className: "title",
             x: 36,
             y: 92,
