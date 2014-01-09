@@ -89,15 +89,16 @@
 
   // main interface for now: apply KIELER layout algorithm and render when xhr
   // is done
-  window.kieler = function (graph, render) {
+  window.kieler = function (graph, gui, render) {
     var kGraph = toKieler(graph);
 
     // some layout options
     var options = {
-      spacing: 15,
-      algorithm: "de.cau.cs.kieler.klay.layered"
+      spacing: gui.spacing,
+      algorithm: "de.cau.cs.kieler.klay.layered",
+      direction: "DOWN"
     };
-  
+    console.log(options);
     // perform the layout request
     kielerLayout({
       server: 'http://layout.rtsys.informatik.uni-kiel.de:9444',

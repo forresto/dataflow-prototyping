@@ -22,7 +22,9 @@
         y: 0,
         scale: 1,
         width: this.props.width,
-        height: this.props.height
+        height: this.props.height,
+        graph: this.props.graph,
+        options: this.props.options
       };
     },
     onWheel: function (event) {
@@ -126,7 +128,7 @@
               className: "view",
               transform: transform
             },
-            TheGraph.Graph({graph: this.props.graph})
+            TheGraph.Graph({graph: this.state.graph, options: this.state.options})
           )
         )
       );
@@ -139,8 +141,15 @@
   TheGraph.Graph = React.createClass({
     getInitialState: function() {
       return {
-        graph: this.props.graph
+        graph: this.props.graph,
+        options: this.props.options
       };
+    },
+    componentWillMount: function () {
+      // xhr to kieler and update the graph
+      kieler(this.state.graph, this.state.options, function (g) {
+        this.setState({graph: g});
+      }.bind(this));
     },
     ports: {},
     getOutport: function (processName, portName) {

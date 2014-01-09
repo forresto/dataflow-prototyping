@@ -17,6 +17,10 @@
   </style>
   <link rel="stylesheet" href="the-graph-svg.css">
 
+  <script src="//cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="../kieler-interface.js"></script>
+
   <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.8.0/react.js"></script>
 
   <script src="the-graph.js"></script>
@@ -24,9 +28,6 @@
   <script src="font-awesome-unicode-map.js"></script>
   <script src="the-graph-node.js"></script>
   <script src="the-graph-port.js"></script>
-
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-  <script src="../kieler-interface.js"></script>
 
   <script type="text/javascript">
   (function(){
@@ -36,17 +37,16 @@
       var width = window.innerWidth;
       var height = window.innerHeight;
 
-      var app = kieler(graph, function () {
-        React.renderComponent(
-          TheGraph.App({
-            graph: graph,
-            width: width,
-            height: height
-          }),
-          document.getElementById('app')
-        )
-      });
-
+      var app = React.renderComponent(
+        TheGraph.App({
+          graph: graph,
+          width: width,
+          height: height,
+          options: { spacing: 15 }
+        }),
+        document.getElementById('app')
+      );
+      window.app = app;
       window.addEventListener('resize', function(){
         width = window.innerWidth;
         height = window.innerHeight;
@@ -73,6 +73,20 @@
       var script = document.createElement('script');
       script.src = 'photobooth.json.js';
       document.head.appendChild(script);
+
+      var KielerOptions = function () {
+        this.spacing = 15.0;
+        this.apply = function () {
+          var app = window.app;
+          app.setState({ options: this });
+        };
+      };
+
+      var kielerOptions = new KielerOptions();
+
+      var gui = new dat.GUI();
+      gui.add(kielerOptions, 'spacing', 5, 200);
+      gui.add(kielerOptions, 'apply');
     }
 
   })();
