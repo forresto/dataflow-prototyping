@@ -142,7 +142,7 @@
       window.addEventListener("keyup", this.onKeyUpDown);
 
       // Mouse listen to window for drag/release outside
-      window.addEventListener("mousedown", this.onMouseDown);
+      // window.addEventListener("mousedown", this.onMouseDown);
       window.addEventListener("mousemove", this.onMouseMove);
       window.addEventListener("mouseup", this.onMouseUp);
 
@@ -165,7 +165,8 @@
         {
           className: "the-graph " + scaleClass,
           name:"app", 
-          onWheel: this.onWheel
+          onWheel: this.onWheel,
+          onMouseDown: this.onMouseDown
         },
         React.DOM.svg(
           {
@@ -255,9 +256,6 @@
     mouseX: 0,
     mouseY: 0,
     onMouseDown: function (event) {
-      // Don't drag graph
-      event.stopPropagation();
-
       // Touch to mouse
       var x, y, target;
       if (event.touches) {
@@ -269,9 +267,13 @@
         y = event.pageY;
         target = event.target;
       }
-
+      
       this.dragItemKey = target.getAttribute("name");
+
       if (this.dragItemKey) {
+        // Don't drag graph
+        event.stopPropagation();
+
         this.mouseX = x;
         this.mouseY = y;
       }
