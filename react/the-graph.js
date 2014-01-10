@@ -252,7 +252,9 @@
 
           this.setState({graph: this.state.graph});
           this.dirty = true;
+          return;
         }
+        // var group = this.state.graph.groups
       }
     },
     onMouseUp: function (event) {

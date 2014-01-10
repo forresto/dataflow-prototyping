@@ -19,13 +19,19 @@ svg {
 }
 g.view {
 }
-g.nodes rect {
+.drag {
+  cursor: pointer;
+}
+.node-rect {
   fill: hsla(0, 0%, 0%, 0.75);
   stroke: hsl(0, 0%, 50%);
   stroke-width: 2px;
 }
-.small g.nodes rect {
-  fill: hsla(0, 0%, 25%, 0.5);
+.node:hover .node-rect {
+  fill: hsla(0, 0%, 20%, 0.75);
+}
+.small .node-rect {
+  fill: hsla(0, 0%, 10%, 0.9);
   stroke: none;
 }
 
@@ -51,26 +57,29 @@ text {
   text-rendering: geometricPrecision; /* makes text scale smoothly */
   font-size: 14px;
   fill: white;
-  text-anchor: middle;
+  text-anchor: start;  
   cursor: default;
 }
 
-.small text.title {
+.node-label {
+  text-anchor: middle;
+}
+.small .node-label {
   visibility: hidden;
 }
 
-text.icon {
+text.node-icon {
   font-family: 'FontAwesome';
   font-size: 40px;
   fill: hsl(0, 0%, 75%);
   text-anchor: middle;
   dominant-baseline: central;
 }
-.small text.icon {
+.small text.node-icon {
   fill: hsl(0, 0%, 100%);
   font-size: 68px;
 }
-.big text.icon {
+.big text.node-icon {
   fill: hsl(0, 0%, 25%);
 }
 
@@ -97,16 +106,30 @@ g.outports text {
 
 
 .group-box {
-  fill: hsla(60, 100%, 40%, 0.25);
+  fill: hsla(60, 100%, 20%, 0.25);
+}
+.group-box:hover {
+  fill: hsla(60, 100%, 30%, 0.25);
 }
 
 .group-label {
-  dominant-baseline: top;
+  /*dominant-baseline: central;*/
   text-anchor: start;  
   fill: white;
   font-size: 20px;
 }
+.small .group-label {
+  font-size: 30px;
+}
 
+.group-description {
+  fill: hsl(0, 0%, 75%);
+  font-size: 12px;
+  text-anchor: start;  
+}
+.small .group-description {
+  visibility: hidden;
+}
 
 g.route0  path.edge-fg { stroke: hsl( 10, 100%, 100%); }
 g.route1  path.edge-fg { stroke: hsl( 10, 100%, 70% ); }
