@@ -35,12 +35,12 @@ svg {
   stroke: none;
 }
 
-path.edge-bg {
+.edge-bg {
   fill: none;
   stroke: black;
   stroke-width: 4px;
 }
-path.edge-fg {
+.edge-fg {
   fill: none;
   stroke: white;
   stroke-width: 2px;
@@ -48,10 +48,10 @@ path.edge-fg {
   transition-property: stroke-width;
   transition-duration: 0.5s;
 }
-.small path.edge-bg {
+.small .edge-bg {
   stroke-width: 8px;
 }
-.small path.edge-fg {
+.small .edge-fg {
   stroke-width: 4px;
 }
 
@@ -146,16 +146,16 @@ text {
   visibility: hidden;
 }
 
-g.route0  path.edge-fg { stroke: hsl( 10, 100%, 100%); }
-g.route1  path.edge-fg { stroke: hsl( 10, 100%, 70% ); }
-g.route2  path.edge-fg { stroke: hsl( 30, 100%, 70% ); }
-g.route3  path.edge-fg { stroke: hsl( 60, 100%, 70% ); }
-g.route4  path.edge-fg { stroke: hsl( 90, 100%, 70% ); }
-g.route5  path.edge-fg { stroke: hsl(120, 100%, 70% ); }
-g.route6  path.edge-fg { stroke: hsl(150, 100%, 70% ); }
-g.route7  path.edge-fg { stroke: hsl(180, 100%, 70% ); }
-g.route8  path.edge-fg { stroke: hsl(210, 100%, 70% ); }
-g.route9  path.edge-fg { stroke: hsl(240, 100%, 70% ); }
-g.route10 path.edge-fg { stroke: hsl(270, 100%, 70% ); }
-g.route11 path.edge-fg { stroke: hsl(300, 100%, 70% ); }
-g.route12 path.edge-fg { stroke: hsl(330, 100%, 70% ); }
+.route0  .edge-fg { stroke: hsl( 10, 100%, 100%); }
+.route1  .edge-fg { stroke: hsl( 10, 100%, 70% ); }
+.route2  .edge-fg { stroke: hsl( 30, 100%, 70% ); }
+.route3  .edge-fg { stroke: hsl( 60, 100%, 70% ); }
+.route4  .edge-fg { stroke: hsl( 90, 100%, 70% ); }
+.route5  .edge-fg { stroke: hsl(120, 100%, 70% ); }
+.route6  .edge-fg { stroke: hsl(150, 100%, 70% ); }
+.route7  .edge-fg { stroke: hsl(180, 100%, 70% ); }
+.route8  .edge-fg { stroke: hsl(210, 100%, 70% ); }
+.route9  .edge-fg { stroke: hsl(240, 100%, 70% ); }
+.route10 .edge-fg { stroke: hsl(270, 100%, 70% ); }
+.route11 .edge-fg { stroke: hsl(300, 100%, 70% ); }
+.route12 .edge-fg { stroke: hsl(330, 100%, 70% ); }
