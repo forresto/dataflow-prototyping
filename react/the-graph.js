@@ -11,11 +11,45 @@
   }
   var TheGraph = context.TheGraph;
 
+  // React setup
+  React.initializeTouchEvents(true);
 
-  // Interactions
+  // Mouse as fake touch
+  var mixinFakeMouse = (
+    function () { 
+      return {
+        onTouchStart: function (event) {
+          event.preventDefault();
+          if (event.touches && event.touches.length === 1) {
+            this.onMouseDown(event);
+          }
+        },
+        onTouchMove: function (event) {
+          event.preventDefault();
+          this.onMouseMove(event);
+        },
+        onTouchEnd: function (event) {
+          event.preventDefault();
+          if (event.touches && event.touches.length === 0) {
+            this.onMouseUp(event);
+          }
+        },
+        componentDidMount: function (rootNode) {
+          // First touch maps to mouse
+          this.getDOMNode().addEventListener("touchstart", this.onTouchStart);
+          this.getDOMNode().addEventListener("touchmove", this.onTouchMove);
+          this.getDOMNode().addEventListener("touchend", this.onTouchEnd);
+          this.getDOMNode().addEventListener("touchcancel", this.onTouchEnd);
+        }
+      }
+    }
+  )();
+
+
 
   TheGraph.App = React.createClass({
     minZoom: 0.04,
+    mixins: [mixinFakeMouse],
     getInitialState: function() {
       return {
         x: 0,
@@ -42,8 +76,8 @@
         var scaleD = scale / this.state.scale;
         var currentX = this.state.x;
         var currentY = this.state.y;
-        var oX = this.mouseX;
-        var oY = this.mouseY;
+        var oX = event.nativeEvent.pageX;
+        var oY = event.nativeEvent.pageY;
         var x = scaleD * (currentX - oX) + oX;
         var y = scaleD * (currentY - oY) + oY;
 
@@ -66,40 +100,57 @@
     mouseX: 0,
     mouseY: 0,
     mousePressed: false,
-    draggingElement: null,
     onMouseDown: function (event) {
+      var x, y;
+      if (event.touches) {
+        x = event.touches[0].pageX;
+        y = event.touches[0].pageY;
+      } else {
+        x = event.pageX;
+        y = event.pageY;
+      }
       this.mousePressed = true;
-      this.mouseX = event.pageX;
-      this.mouseY = event.pageY;
+      this.mouseX = x;
+      this.mouseY = y;
     },
     onMouseMove: function (event) {
       // Pan
       if (this.mousePressed) {
-        var deltaX = event.pageX - this.mouseX;
-        var deltaY = event.pageY - this.mouseY;
+        var x, y;
+        if (event.touches) {
+          x = event.touches[0].pageX;
+          y = event.touches[0].pageY;
+        } else {
+          x = event.pageX;
+          y = event.pageY;
+        }
+        var deltaX = x - this.mouseX;
+        var deltaY = y - this.mouseY;
         this.setState({
           x: this.state.x + deltaX,
           y: this.state.y + deltaY
         });
+        this.mouseX = x;
+        this.mouseY = y;
       }
-      this.mouseX = event.pageX;
-      this.mouseY = event.pageY;
     },
     onMouseUp: function (event) {
       this.mousePressed = false;
     },
-    componentDidMount: function () {
+    componentDidMount: function (rootNode) {
       window.addEventListener("keydown", this.onKeyUpDown);
       window.addEventListener("keyup", this.onKeyUpDown);
 
       // Mouse listen to window for drag/release outside
-      window.addEventListener("mousedown", this.onMouseDown);
+      // window.addEventListener("mousedown", this.onMouseDown);
       window.addEventListener("mousemove", this.onMouseMove);
       window.addEventListener("mouseup", this.onMouseUp);
 
       // Start zoom from middle if zoom before mouse move
       this.mouseX = Math.floor( window.innerWidth/2 );
       this.mouseY = Math.floor( window.innerHeight/2 );
+    },
+    componentDidUpdate: function (prevProps, prevState, rootNode) {
     },
     render: function() {
       // pan and zoom
@@ -114,7 +165,8 @@
         {
           className: "the-graph " + scaleClass,
           name:"app", 
-          onWheel: this.onWheel
+          onWheel: this.onWheel,
+          onMouseDown: this.onMouseDown
         },
         React.DOM.svg(
           {
@@ -125,8 +177,14 @@
             {
               className: "view",
               transform: transform
+              // style: {
+              //   WebkitTransform: transform
+              // }
             },
-            TheGraph.Graph({graph: this.props.graph})
+            TheGraph.Graph({
+              graph: this.props.graph,
+              scale: this.state.scale
+            })
           )
         )
       );
@@ -137,6 +195,7 @@
   // Graph view
 
   TheGraph.Graph = React.createClass({
+    mixins: [mixinFakeMouse],
     getInitialState: function() {
       return {
         graph: this.props.graph
@@ -207,17 +266,86 @@
     },
     dirty: false,
     shouldComponentUpdate: function () {
-      // If ports change or nodes move, then edges need to rerender
+      // If ports change or nodes move, then edges need to rerender, so we do the whole graph
       return this.dirty;
     },
+    dragItemKey: null,
+    mouseX: 0,
+    mouseY: 0,
+    onMouseDown: function (event) {
+      // Touch to mouse
+      var x, y, target;
+      if (event.touches) {
+        x = event.touches[0].pageX;
+        y = event.touches[0].pageY;
+        target = event.touches[0].target;
+      } else {
+        x = event.pageX;
+        y = event.pageY;
+        target = event.target;
+      }
+      
+      this.dragItemKey = target.getAttribute("name");
+
+      if (this.dragItemKey) {
+        // Don't drag graph
+        event.stopPropagation();
+
+        this.mouseX = x;
+        this.mouseY = y;
+      }
+    },
+    onMouseMove: function (event) {
+      if (this.dragItemKey) {
+        // Don't fire on graph
+        event.stopPropagation();
+
+        // Touch to mouse
+        var x, y;
+        if (event.touches) {
+          x = event.touches[0].pageX;
+          y = event.touches[0].pageY;
+        } else {
+          x = event.pageX;
+          y = event.pageY;
+        }
+
+        var process = this.state.graph.processes[this.dragItemKey];
+        if (process) {
+          var deltaX = Math.round( (x - this.mouseX) / this.props.scale );
+          var deltaY = Math.round( (y - this.mouseY) / this.props.scale );
+          process.metadata.x += deltaX;
+          process.metadata.y += deltaY;
+          this.mouseX = x;
+          this.mouseY = y;
+
+          this.setState({graph: this.state.graph});
+          this.dirty = true;
+          return;
+        }
+        // var group = this.state.graph.groups
+      }
+    },
+    onMouseUp: function (event) {
+      if (this.dragItemKey) {
+        // Don't fire on graph
+        if (event.stopPropagation) { event.stopPropagation(); }
+        this.dragItemKey = null;
+      }
+    },
+    componentDidMount: function () {
+      // Mouse listen to window for drag/release outside
+      window.addEventListener("mousemove", this.onMouseMove);
+      window.addEventListener("mouseup", this.onMouseUp);
+    },
     render: function() {
-      console.time("graphRender");
       this.dirty = false;
 
       var self = this;
+      var graph = this.state.graph;
 
       // Nodes
-      var processes = this.state.graph.processes;
+      var processes = graph.processes;
       var nodes = Object.keys(processes).map(function (key) {
         var process = processes[key];
         return TheGraph.Node({
@@ -228,8 +356,45 @@
         });
       });
 
+      // Groups
+      var groups = graph.groups.map(function (group) {
+        if (group.nodes.length < 1) {
+          return;
+        }
+        var minX = Infinity;
+        var minY = Infinity;
+        var maxX = -Infinity;
+        var maxY = -Infinity;
+        var members = group.nodes.map(function(key){
+          var process = graph.processes[key];
+          if (!process) {
+            throw new Error("Didn't find group member "+key+" when making group "+group.id);
+          }
+          if (process.metadata.x < minX) { minX = process.metadata.x; }
+          if (process.metadata.y < minY) { minY = process.metadata.y; }
+          if (process.metadata.x > maxX) { maxX = process.metadata.x; }
+          if (process.metadata.y > maxY) { maxY = process.metadata.y; }
+          return process;
+        });
+        if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) {
+          minX = 0;
+          minY = 0;
+          maxX = 0;
+          maxY = 0;
+          return;
+        }
+        return TheGraph.Group({
+          minX: minX,
+          minY: minY,
+          maxX: maxX,
+          maxY: maxY,
+          label: group.name,
+          description: group.metadata.description
+        });
+      });
+
       // Edges
-      var connections = this.state.graph.connections;
+      var connections = graph.connections;
       var edges = connections.map(function (connection) {
         if (connection.data !== undefined) {
           // IIP
@@ -260,10 +425,15 @@
         });
       });
 
-      var group = React.DOM.g(
+      return React.DOM.g(
         {
-          className: "graph"
+          className: "graph",
+          onMouseDown: this.onMouseDown
         },
+        React.DOM.g({
+          className: "groups",
+          children: groups
+        }),
         React.DOM.g({
           className: "edges",
           children: edges
@@ -273,8 +443,6 @@
           children: nodes
         })
       );
-      console.timeEnd("graphRender");
-      return group;
     }
   });  
 

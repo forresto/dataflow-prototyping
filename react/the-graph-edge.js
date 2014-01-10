@@ -3,6 +3,9 @@
 
   var TheGraph = context.TheGraph;
 
+  // Const
+  var CURVE = 50;
+
 
   // Edge view
 
@@ -15,13 +18,28 @@
       var sourceY = this.props.source.metadata.y + this.props.sourcePort.y;
       var targetX = this.props.target.metadata.x + 0;
       var targetY = this.props.target.metadata.y + this.props.targetPort.y;
-      var curve = 50;
+
+      var c1X, c1Y, c2X, c2Y;
+      if (targetX < sourceX+CURVE && Math.abs(targetY-sourceY) > TheGraph.nodeSize) {
+        // Stick out some
+        c1X = sourceX + CURVE;
+        c1Y = sourceY;
+        c2X = targetX - CURVE;
+        c2Y = targetY;
+      } else {
+        // Controls halfway between
+        c1X = sourceX + (targetX - sourceX)/2;
+        c1Y = sourceY;
+        c2X = c1X;
+        c2Y = targetY;
+      }
+
       var path = [
         "M",
         sourceX, sourceY,
         "C",
-        sourceX + curve, sourceY,
-        targetX - curve, targetY,
+        c1X, c1Y,
+        c2X, c2Y,
         targetX, targetY
       ].join(" ");
       return (

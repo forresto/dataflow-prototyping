@@ -17,32 +17,41 @@ svg {
   -ms-user-select: none;
   user-select: none;
 }
-g.view {
+.view {
 }
-g.nodes rect {
+.drag {
+  cursor: pointer;
+}
+.node-rect {
   fill: hsla(0, 0%, 0%, 0.75);
   stroke: hsl(0, 0%, 50%);
   stroke-width: 2px;
 }
-.small g.nodes rect {
-  fill: hsla(0, 0%, 25%, 0.5);
+.node:hover .node-rect {
+  fill: hsla(0, 0%, 20%, 0.75);
+}
+.small .node-rect {
+  fill: hsla(0, 0%, 10%, 0.9);
   stroke: none;
 }
 
-path.edge-bg {
+.edge-bg {
   fill: none;
   stroke: black;
   stroke-width: 4px;
 }
-path.edge-fg {
+.edge-fg {
   fill: none;
   stroke: white;
   stroke-width: 2px;
+
+  transition-property: stroke-width;
+  transition-duration: 0.5s;
 }
-.small path.edge-bg {
+.small .edge-bg {
   stroke-width: 8px;
 }
-.small path.edge-fg {
+.small .edge-fg {
   stroke-width: 4px;
 }
 
@@ -51,61 +60,102 @@ text {
   text-rendering: geometricPrecision; /* makes text scale smoothly */
   font-size: 14px;
   fill: white;
-  text-anchor: middle;
+  text-anchor: start;  
   cursor: default;
 }
 
-.small text.title {
+.node-label {
+  text-anchor: middle;
+}
+.small .node-label {
   visibility: hidden;
 }
 
-text.icon {
+.node-icon {
   font-family: 'FontAwesome';
   font-size: 40px;
   fill: hsl(0, 0%, 75%);
   text-anchor: middle;
   dominant-baseline: central;
+
+  transition-property: font-size, fill;
+  transition-duration: 0.5s,      0.3s;
 }
-.small text.icon {
+.small .node-icon {
   fill: hsl(0, 0%, 100%);
   font-size: 68px;
 }
-.big text.icon {
+.big .node-icon {
   fill: hsl(0, 0%, 25%);
 }
 
-g.port circle {
+.port-circle {
   fill: black;
   stroke: hsl(0, 0%, 50%);
   stroke-width: 1px;
 }
-g.port text {
+.small .port-circle {
+  visibility: hidden;
+}
+.port-label {
   visibility: hidden;
   font-size: 6px;
   alignment-baseline: middle;
 }
 
-g.inports text {
+.inports .port-label {
   text-anchor: start;  
 }
-g.outports text {
+.outports .port-label {
   text-anchor: end;  
 }
-.big g.port text {
+.big .port-label {
   visibility: visible;
 }
 
 
-g.route0  path.edge-fg { stroke: hsl( 10, 100%, 100%); }
-g.route1  path.edge-fg { stroke: hsl( 10, 100%, 70% ); }
-g.route2  path.edge-fg { stroke: hsl( 30, 100%, 70% ); }
-g.route3  path.edge-fg { stroke: hsl( 60, 100%, 70% ); }
-g.route4  path.edge-fg { stroke: hsl( 90, 100%, 70% ); }
-g.route5  path.edge-fg { stroke: hsl(120, 100%, 70% ); }
-g.route6  path.edge-fg { stroke: hsl(150, 100%, 70% ); }
-g.route7  path.edge-fg { stroke: hsl(180, 100%, 70% ); }
-g.route8  path.edge-fg { stroke: hsl(210, 100%, 70% ); }
-g.route9  path.edge-fg { stroke: hsl(240, 100%, 70% ); }
-g.route10 path.edge-fg { stroke: hsl(270, 100%, 70% ); }
-g.route11 path.edge-fg { stroke: hsl(300, 100%, 70% ); }
-g.route12 path.edge-fg { stroke: hsl(330, 100%, 70% ); }
+.group-box {
+  fill: hsla(60, 100%, 20%, 0.25);
+
+  transition-property: fill;
+  transition-duration: 0.3s;
+}
+.group-box:hover {
+  fill: hsla(60, 100%, 30%, 0.25);
+}
+
+.group-label {
+  text-anchor: start;  
+  fill: white;
+  font-size: 20px;
+  transition-property: font-size;
+  transition-duration: 0.5s;
+}
+.small .group-label {
+  font-size: 30px;
+  transition-property: font-size;
+  transition-duration: 0.5s;
+}
+
+.group-description {
+  fill: hsl(0, 0%, 75%);
+  font-size: 12px;
+  text-anchor: start;  
+}
+.small .group-description {
+  visibility: hidden;
+}
+
+.route0  .edge-fg { stroke: hsl( 10, 100%, 100%); }
+.route1  .edge-fg { stroke: hsl( 10, 100%, 70% ); }
+.route2  .edge-fg { stroke: hsl( 30, 100%, 70% ); }
+.route3  .edge-fg { stroke: hsl( 60, 100%, 70% ); }
+.route4  .edge-fg { stroke: hsl( 90, 100%, 70% ); }
+.route5  .edge-fg { stroke: hsl(120, 100%, 70% ); }
+.route6  .edge-fg { stroke: hsl(150, 100%, 70% ); }
+.route7  .edge-fg { stroke: hsl(180, 100%, 70% ); }
+.route8  .edge-fg { stroke: hsl(210, 100%, 70% ); }
+.route9  .edge-fg { stroke: hsl(240, 100%, 70% ); }
+.route10 .edge-fg { stroke: hsl(270, 100%, 70% ); }
+.route11 .edge-fg { stroke: hsl(300, 100%, 70% ); }
+.route12 .edge-fg { stroke: hsl(330, 100%, 70% ); }

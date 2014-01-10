@@ -2,11 +2,14 @@
 <html>
 <head>
   <title>react + svg test</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
   <style>
     body {
       padding: 0;
       margin: 0;
-      background-color: hsl(0, 0%, 10%);
+      background-color: hsl(0, 0%, 0%);
       font-family: monospace;
       overflow: hidden;
       color: white;
@@ -27,7 +30,18 @@
   <script src="the-graph-edge.js"></script>
   <script src="font-awesome-unicode-map.js"></script>
   <script src="the-graph-node.js"></script>
+  <script src="the-graph-group.js"></script>
   <script src="the-graph-port.js"></script>
+
+</head>
+<body>
+  <div id="app"></div>
+  <div style="position:absolute; top:0; left:0;">
+    <a href="https://github.com/forresto/prototyping/blob/gh-pages/react/">source</a><br/>
+    wheel to zoom<br/>
+    <!-- <input id="zoom" type="range" min="0.04" max="8" step="0.01" value="1.0"></input><br/> -->
+    drag to pan
+  </div>
 
   <script type="text/javascript">
   (function(){
@@ -91,14 +105,5 @@
   })();
   </script>
 
-</head>
-<body>
-  <div id="app"></div>
-  <div style="position:absolute; top:0; left:0;">
-    <a href="https://github.com/forresto/prototyping/blob/gh-pages/react/">source</a><br/>
-    wheel to zoom<br/>
-    <!-- <input id="zoom" type="range" min="0.04" max="8" step="0.01" value="1.0"></input><br/> -->
-    drag to pan
-  </div>
 </body>
 </html>

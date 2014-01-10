@@ -14,11 +14,13 @@
             className: "port"
           },
           React.DOM.circle({
+            className: "port-circle",
             cx: this.props.x,
             cy: this.props.y,
             r: 4
           }),
           React.DOM.text({
+            className: "port-label",
             x: this.props.x,
             y: this.props.y,
             children: this.props.label
