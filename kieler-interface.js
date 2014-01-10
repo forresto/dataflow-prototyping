@@ -91,14 +91,8 @@
   // is done
   window.kieler = function (graph, gui, render) {
     var kGraph = toKieler(graph);
-    var gui = gui || {};
-
-    // some layout options
-    var options = {
-      spacing: gui.spacing || 15,
-      algorithm: "de.cau.cs.kieler.klay.layered",
-      direction: "DOWN"
-    };
+    var options = gui || {};
+    options.algorithm = "de.cau.cs.kieler.klay.layered";
 
     // perform the layout request
     kielerLayout({
