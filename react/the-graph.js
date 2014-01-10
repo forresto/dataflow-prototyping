@@ -153,7 +153,10 @@
           React.DOM.g(
             {
               className: "view",
-              transform: transform
+              transform: transform,
+              // style: {
+              //   WebkitTransform: transform
+              // }
             },
             TheGraph.Graph({
               graph: this.props.graph,
