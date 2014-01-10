@@ -44,6 +44,9 @@ path.edge-fg {
   fill: none;
   stroke: white;
   stroke-width: 2px;
+
+  transition-property: stroke-width;
+  transition-duration: 0.5s;
 }
 .small path.edge-bg {
   stroke-width: 8px;
@@ -76,14 +79,11 @@ text {
   dominant-baseline: central;
 
   transition-property: font-size, fill;
-  transition-duration:      0.5s, 0.3s;
+  transition-duration: 0.5s,      0.3s;
 }
 .small .node-icon {
   fill: hsl(0, 0%, 100%);
   font-size: 68px;
-
-  transition-property: font-size;
-  transition-duration: 0.5s;
 }
 .big .node-icon {
   fill: hsl(0, 0%, 25%);

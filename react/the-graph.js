@@ -20,8 +20,6 @@
       return {
         x: 0,
         y: 0,
-        inertiaX: 0,
-        inertiaY: 0,
         scale: 1,
         width: this.props.width,
         height: this.props.height
@@ -87,13 +85,6 @@
       }
     },
     onMouseUp: function (event) {
-      // // Inertia
-      // if (this.mousePressed) {
-      //   this.setState({
-      //     inertiaX: event.pageX - this.mouseX,
-      //     inertiaY: event.pageY - this.mouseY
-      //   });
-      // }
       this.mousePressed = false;
     },
     panInertia: function (x, y) {
@@ -153,7 +144,7 @@
           React.DOM.g(
             {
               className: "view",
-              transform: transform,
+              transform: transform
               // style: {
               //   WebkitTransform: transform
               // }
@@ -292,14 +283,14 @@
 
       // Groups
       var groups = graph.groups.map(function (group) {
-        if (group.processes.length < 1) {
+        if (group.nodes.length < 1) {
           return;
         }
         var minX = Infinity;
         var minY = Infinity;
         var maxX = -Infinity;
         var maxY = -Infinity;
-        var members = group.processes.map(function(key){
+        var members = group.nodes.map(function(key){
           var process = graph.processes[key];
           if (!process) {
             throw new Error("Didn't find group member "+key+" when making group "+group.id);
@@ -322,7 +313,7 @@
           minY: minY,
           maxX: maxX,
           maxY: maxY,
-          label: group.metadata.label,
+          label: group.name,
           description: group.metadata.description
         });
       });
