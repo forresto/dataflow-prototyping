@@ -91,14 +91,15 @@
   // is done
   window.kieler = function (graph, gui, render) {
     var kGraph = toKieler(graph);
+    var gui = gui || {};
 
     // some layout options
     var options = {
-      spacing: gui.spacing,
+      spacing: gui.spacing || 15,
       algorithm: "de.cau.cs.kieler.klay.layered",
       direction: "DOWN"
     };
-    console.log(options);
+
     // perform the layout request
     kielerLayout({
       server: 'http://layout.rtsys.informatik.uni-kiel.de:9444',

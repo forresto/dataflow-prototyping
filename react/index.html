@@ -41,12 +41,11 @@
         TheGraph.App({
           graph: graph,
           width: width,
-          height: height,
-          options: { spacing: 15 }
+          height: height
         }),
         document.getElementById('app')
       );
-      window.app = app;
+
       window.addEventListener('resize', function(){
         width = window.innerWidth;
         height = window.innerHeight;
@@ -77,8 +76,8 @@
       var KielerOptions = function () {
         this.spacing = 15.0;
         this.apply = function () {
-          var app = window.app;
-          app.setState({ options: this });
+          var event = new CustomEvent("kieler", { detail: this });
+          window.dispatchEvent(event);
         };
       };
 
