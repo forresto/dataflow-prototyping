@@ -149,17 +149,17 @@
       f1.add(kielerOptions, 'spacing', 5, 100);
 
       var f2 = gui.addFolder('KLay Layered Options');
-      f2.add(kielerOptions, 'crossMin', ['LAYER_SWEEP']);
-      f2.add(kielerOptions, 'cycleBreaking', ['GREEDY']);
+      f2.add(kielerOptions, 'crossMin', ['LAYER_SWEEP', 'INTERACTIVE']);
+      f2.add(kielerOptions, 'cycleBreaking', ['GREEDY', 'INTERACTIVE']);
       f2.add(kielerOptions, 'edgeSpacingFactor', 0.5, 10);
       f2.add(kielerOptions, 'feedBackEdges', false);
       f2.add(kielerOptions, 'inLayerSpacingFactor', 0, 50);
-      f2.add(kielerOptions, 'interactiveReferencePoint', ['CENTER']);
-      f2.add(kielerOptions, 'LabelSide', ['SMART']);
-      f2.add(kielerOptions, 'layerConstraint', ['NONE']);
+      f2.add(kielerOptions, 'interactiveReferencePoint', ['CENTER', 'TOP_LEFT']);
+      f2.add(kielerOptions, 'LabelSide', ['SMART', 'ALWAYS_UP', 'ALWAYS_DOWN', 'DIRECTION_UP', 'DIRECTION_DOWN']);
+      f2.add(kielerOptions, 'layerConstraint', ['NONE', 'FIRST', 'FIRST_SEPARATE', 'LAST', 'LAST_SEPARATE']);
       f2.add(kielerOptions, 'mergePorts', false);
-      f2.add(kielerOptions, 'nodeLayering', ['NETWORK_SIMPLEX']);
-      f2.add(kielerOptions, 'nodePlace', ['BRANDES_KOEPF']);
+      f2.add(kielerOptions, 'nodeLayering', ['NETWORK_SIMPLEX', 'LONGEST_PATH', 'INTERACTIVE']);
+      f2.add(kielerOptions, 'nodePlace', ['BRANDES_KOEPF', 'SIMPLE', 'LINEAR_SEGMENTS']);
       f2.add(kielerOptions, 'thoroughness', 1, 20);
 
       gui.add(kielerOptions, 'apply');
