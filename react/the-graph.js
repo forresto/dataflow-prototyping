@@ -208,13 +208,6 @@
       }.bind(this));
       this.dirty = true;
     },
-    componentDidMount: function () {
-      window.addEventListener('kieler', function (event) {
-        var layoutOptions = event.detail;
-        this.autolayout(layoutOptions);
-
-      }.bind(this));
-    },
     componentWillMount: function () {
       this.autolayout();
     },
@@ -337,6 +330,11 @@
       // Mouse listen to window for drag/release outside
       window.addEventListener("mousemove", this.onMouseMove);
       window.addEventListener("mouseup", this.onMouseUp);
+      // Listen to kieler custom event from dat.gui
+      window.addEventListener('kieler', function (event) {
+        var layoutOptions = event.detail;
+        this.autolayout(layoutOptions);
+      }.bind(this));
     },
     render: function() {
       this.dirty = false;
