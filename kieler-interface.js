@@ -39,15 +39,19 @@
     // encode nodes
     var processes = graph.processes;
     var nodeKeys = Object.keys(processes);
+    var idx = {};
+    var countIdx = 0;
     var nodes = nodeKeys.map(function (key) {
       var process = processes[key];
       kGraph.children.push({id: key, 
                             labels: [{text: process.metadata.label}], 
                             width: 72, 
-                            height: 72});
+                            height: 72,
+                            ports: []});
+      idx[key] = countIdx++;
     });
 
-    // encode edges
+    // encode edges (and ports on both edges and already encoded nodes)
     var currentEdge = 0;
     var connections = graph.connections;
     var edges = connections.map(function (connection) {
@@ -55,10 +59,32 @@
         return;
       }
       var source = connection.src.process;
+      var sourcePort = connection.src.port;
       var target = connection.tgt.process;
-      kGraph.edges.push({id: "e" + currentEdge++, 
+      var targetPort = connection.tgt.port;
+      kGraph.edges.push({id: 'e' + currentEdge++, 
                          source: source,
-                         target: target});
+                         sourcePort: source + '_' + sourcePort,
+                         target: target,
+                         targetPort: target + '_' + targetPort});
+      // complete nodes encoding adding ports to them
+      var ports = kGraph.children[idx[source]].ports;
+      var port = {id: source + '_' + sourcePort, 
+                  width: 10, 
+                  height: 10, 
+                  properties: {'de.cau.cs.kieler.portSide': 'SOUTH'}};
+      if (ports.indexOf(port) < 0) {
+        ports.push(port);
+      }
+
+      var ports = kGraph.children[idx[target]].ports;
+      var port = {id: target + '_' + targetPort, 
+                  width: 10, 
+                  height: 10, 
+                  properties: {'de.cau.cs.kieler.portSide': 'NORTH'}};
+      if (ports.indexOf(port) < 0) {
+        ports.push(port);
+      }
     });
 
     return kGraph;
