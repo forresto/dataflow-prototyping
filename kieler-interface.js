@@ -1,6 +1,16 @@
 (function(){
   "use strict";
 
+  Array.prototype.clean = function() {
+    for (var i = 0; i < this.length; i++) {
+      if (this[i] == null) {         
+        this.splice(i, 1);
+        i--;
+      }
+    }
+    return this;
+  };
+
   // from kielerlayout.js
   var kielerLayout = function(opts) {
     // gather information
@@ -64,6 +74,8 @@
       var targetPort = connection.tgt.port;
       kGraph.edges.push({id: 'e' + currentEdge++, 
                          source: source,
+                         // KGraph edges doesn't allow the same name to
+                         // both sourcePort and targetPort, so...
                          sourcePort: source + '_' + sourcePort,
                          target: target,
                          targetPort: target + '_' + targetPort});
@@ -87,6 +99,38 @@
       }
     });
 
+    // encode groups
+    var groups = graph.groups;
+    var countGroups = 0;
+    groups.map(function (group) {
+      // create a node to use as a subgraph
+      var node = {id: 'group' + countGroups++, children: [], edges: []};
+      // build the node/subgraph
+      group.nodes.map(function (n) {
+        node.children.push(kGraph.children[idx[n]]);
+        node.edges.push(kGraph.edges.filter(function (edge) {
+          if ((edge.source === n) || (edge.target === n)) {
+            return edge;
+          }
+        })[0]);
+
+        // mark nodes inside the group to be removed from the graph
+        kGraph.children[idx[n]] = null;
+
+      });
+      // mark edges too
+      node.edges.map(function (edge) {
+        kGraph.edges[parseInt(edge.id.substr(1))] = null;
+      });
+      // add node/subgraph to the graph
+      kGraph.children.push(node);
+    });
+
+    // remove the nodes and edges from the graph, just preserve them inside the
+    // subgraph/group
+    kGraph.children.clean();
+    kGraph.edges.clean();
+
     return kGraph;
   };
 
@@ -105,9 +149,26 @@
       var kNode = children.filter(function (el) {
         if (el.id === key)
           return el;
+        // TODO: too ugly! we need a recursive method
+        if (el.children) {
+          var grandchildren = el.children;
+          var foo = grandchildren.filter(function (ell) {
+            if (ell.id === key) {
+              process.metadata.x = ell.x;
+              process.metadata.y = ell.y;
+              return ell;
+            }
+          })[0];
+          return foo; 
+        }
       })[0];
-      process.metadata.x = kNode.x;
-      process.metadata.y = kNode.y;
+
+      if (kNode) {
+        if (!kNode.children) {
+          process.metadata.x = kNode.x;
+          process.metadata.y = kNode.y;
+        }
+      }
     });
     // TODO: update oGraph edges (and ports) as well
     return oGraph;
