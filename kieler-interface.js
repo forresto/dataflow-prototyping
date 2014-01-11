@@ -45,7 +45,6 @@
   // encode the original NoFlo graph to a KGraph (KIELER Graph) JSON
   var toKieler = function (graph) {
     var kGraph = {id: 'root',
-                  'de.cau.cs.kieler.layoutHierarchy': true,
                   children: [], 
                   edges: []};
 
@@ -108,7 +107,7 @@
     groups.map(function (group) {
       // create a node to use as a subgraph
       var node = {id: 'group' + countGroups++, 
-                  'de.cau.cs.kieler.layoutHierarchy': true,
+                  properties: {'de.cau.cs.kieler.layoutHierarchy': true},
                   children: [], 
                   edges: []};
       // build the node/subgraph
