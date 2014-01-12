@@ -46,7 +46,6 @@
   )();
 
 
-
   TheGraph.App = React.createClass({
     minZoom: 0.04,
     mixins: [mixinFakeMouse],
@@ -63,39 +62,23 @@
       // Don't bounce
       event.preventDefault();
 
-      if (this.keyPan) {
-        this.setState({
-          x: this.state.x - event.deltaX,
-          y: this.state.y + event.deltaY
-        });
-      } else {
-        var scale = this.state.scale + (this.state.scale * event.deltaY/500);
-        if (scale < this.minZoom) { return; }
+      var scale = this.state.scale + (this.state.scale * event.deltaY/500);
+      if (scale < this.minZoom) { return; }
 
-        // Zoom and pan transform-origin equivalent
-        var scaleD = scale / this.state.scale;
-        var currentX = this.state.x;
-        var currentY = this.state.y;
-        var oX = event.nativeEvent.pageX;
-        var oY = event.nativeEvent.pageY;
-        var x = scaleD * (currentX - oX) + oX;
-        var y = scaleD * (currentY - oY) + oY;
+      // Zoom and pan transform-origin equivalent
+      var scaleD = scale / this.state.scale;
+      var currentX = this.state.x;
+      var currentY = this.state.y;
+      var oX = event.nativeEvent.pageX;
+      var oY = event.nativeEvent.pageY;
+      var x = scaleD * (currentX - oX) + oX;
+      var y = scaleD * (currentY - oY) + oY;
 
-        this.setState({
-          scale: scale,
-          x: x,
-          y: y
-        });
-      }
-    },
-    keyPan: false,
-    onKeyUpDown: function (event) {
-      // console.log(event);
-      if (event.keyCode === 32 /* space */) {
-        // Don't scroll with space
-        event.preventDefault();
-        this.keyPan = (event.type === "keydown");
-      }
+      this.setState({
+        scale: scale,
+        x: x,
+        y: y
+      });
     },
     mouseX: 0,
     mouseY: 0,
@@ -138,11 +121,7 @@
       this.mousePressed = false;
     },
     componentDidMount: function (rootNode) {
-      window.addEventListener("keydown", this.onKeyUpDown);
-      window.addEventListener("keyup", this.onKeyUpDown);
-
       // Mouse listen to window for drag/release outside
-      // window.addEventListener("mousedown", this.onMouseDown);
       window.addEventListener("mousemove", this.onMouseMove);
       window.addEventListener("mouseup", this.onMouseUp);
 
@@ -153,6 +132,9 @@
     componentDidUpdate: function (prevProps, prevState, rootNode) {
     },
     render: function() {
+      // console.timeEnd("App.render");
+      // console.time("App.render");
+
       // pan and zoom
       var sc = this.state.scale;
       var x = this.state.x;
@@ -166,7 +148,11 @@
           className: "the-graph " + scaleClass,
           name:"app", 
           onWheel: this.onWheel,
-          onMouseDown: this.onMouseDown
+          onMouseDown: this.onMouseDown,
+          style: {
+            width: this.state.width,
+            height: this.state.height
+          }
         },
         React.DOM.svg(
           {
@@ -177,9 +163,6 @@
             {
               className: "view",
               transform: transform
-              // style: {
-              //   WebkitTransform: transform
-              // }
             },
             TheGraph.Graph({
               graph: this.props.graph,
@@ -201,51 +184,42 @@
         graph: this.props.graph
       };
     },
-    ports: {},
     getOutport: function (processName, portName) {
-      var ports = this.ports[processName];
-      var outport = ports.outports[ ports.outportKeys.indexOf(portName) ];
-      if ( !outport ) {
-        outport = {
+      var ports = this.getPorts(processName);
+      if ( !ports.outports[portName] ) {
+        ports.outports[portName] = {
           label: portName,
           x: TheGraph.nodeSize,
           y: TheGraph.nodeSize/2
         };
-        ports.outportKeys.push(portName);
-        ports.outports.push(outport);
-
         this.dirty = true;
       }
-      return outport;
+      return ports.outports[portName];
     },
     getInport: function (processName, portName) {
-      var ports = this.ports[processName];
-      var inport = ports.inports[ ports.inportKeys.indexOf(portName) ];
-      if ( !inport ) {
-        inport = {
+      var ports = this.getPorts(processName);
+      if ( !ports.inports[portName] ) {
+        ports.inports[portName] = {
           label: portName,
           x: 0,
           y: TheGraph.nodeSize/2
         };
-        ports.inportKeys.push(portName);
-        ports.inports.push(inport);
-
         this.dirty = true;
       }
-      return inport;
+      return ports.inports[portName];
     },
-    getPorts: function (process) {
-      if (!this.ports[process]) {
-        this.ports[process] = {
-          inportKeys: [],
-          inports: [],
-          outportKeys: [],
-          outports: []
-        };
-
-        this.dirty = true;
+    getPorts: function (processName) {
+      var process = this.state.graph.processes[processName];
+      if (!process) {
+        throw new Error("No process in the current graph with key: "+ processName);
       }
-      return this.ports[process];
+      if (!process.metadata.ports) {
+        process.metadata.ports = {
+          inports: {},
+          outports: {}
+        };
+      }
+      return process.metadata.ports;
     },
     dirty: false,
     shouldComponentUpdate: function () {
@@ -267,7 +241,7 @@
         y = event.pageY;
         target = event.target;
       }
-      
+
       this.dragItemKey = target.getAttribute("name");
 
       if (this.dragItemKey) {
@@ -322,20 +296,26 @@
       window.addEventListener("mouseup", this.onMouseUp);
     },
     render: function() {
+      // console.timeEnd("Graph.render");
+      // console.time("Graph.render");
+
       this.dirty = false;
 
       var self = this;
       var graph = this.state.graph;
+      var processes = graph.processes;
 
       // Nodes
-      var processes = graph.processes;
       var nodes = Object.keys(processes).map(function (key) {
         var process = processes[key];
+        if (!process.metadata) {
+          process.metadata = {x:0, y:0};
+        }
         return TheGraph.Node({
           key: key,
-          process: process,
-          // This might not be pure, since these objects change later in this function
-          ports: self.getPorts(key) 
+          x: process.metadata.x,
+          y: process.metadata.y,
+          process: process
         });
       });
 
@@ -400,10 +380,10 @@
           route = 0;
         }
         return TheGraph.Edge({
-          source: source,
-          sourcePort: sourcePort,
-          target: target,
-          targetPort: targetPort,
+          sX: source.metadata.x + TheGraph.nodeSize,
+          sY: source.metadata.y + sourcePort.y,
+          tX: target.metadata.x,
+          tY: target.metadata.y + targetPort.y,
           route: route
         });
       });

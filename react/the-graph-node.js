@@ -15,27 +15,46 @@
         icon: faKeys[ Math.floor(Math.random()*faKeys.length) ]
       };
     },
+    shouldComponentUpdate: function (nextProps, nextState) {
+      // Only rerender if moved
+      return (
+        nextProps.x !== this.props.x || 
+        nextProps.y !== this.props.y
+      );
+    },
     render: function() {
-      var label = this.props.process.metadata.label;
+      var metadata = this.props.process.metadata;
+
+      var label = metadata.label;
       if (label === undefined || label === "") {
         label = this.props.process.key;
       }
-      var x = this.props.process.metadata.x;
-      var y = this.props.process.metadata.y;
+      var x = this.props.x;
+      var y = this.props.y;
 
       // Ports
-      var count = this.props.ports.inports.length;
-      var index = 0;
-      var inports = this.props.ports.inports.map(function(info){
+      var keys, count, index;
+
+      // Inports
+      var inports = metadata.ports.inports;
+      keys = Object.keys(inports);
+      count = keys.length;
+      index = 0;
+      var inportViews = keys.map(function(key){
         index++;
+        var info = inports[key];
         info.y = TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * index);
         return TheGraph.Port(info);
       });
 
-      count = this.props.ports.outports.length;
+      // Outports
+      var outports = metadata.ports.outports;
+      keys = Object.keys(outports);
+      count = keys.length;
       index = 0;
-      var outports = this.props.ports.outports.map(function(info){
+      var outportViews = keys.map(function(key){
         index++;
+        var info = outports[key];
         info.y = TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * index);
         return TheGraph.Port(info);
       });
@@ -65,11 +84,11 @@
           }),
           React.DOM.g({
             className: "inports",
-            children: inports
+            children: inportViews
           }),
           React.DOM.g({
             className: "outports",
-            children: outports
+            children: outportViews
           }),
           React.DOM.text({
             className: "node-label",

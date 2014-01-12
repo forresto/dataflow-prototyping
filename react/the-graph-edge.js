@@ -13,11 +13,21 @@
     componentWillMount: function() {
       // Todo: listen for source/target moving; change state
     },
+    shouldComponentUpdate: function (nextProps, nextState) {
+      // Only rerender if changed
+      return (
+        nextProps.sX !== this.props.sX || 
+        nextProps.sY !== this.props.sY ||
+        nextProps.tX !== this.props.tX || 
+        nextProps.tY !== this.props.tY ||
+        nextProps.route !== this.props.route
+      );
+    },
     render: function() {
-      var sourceX = this.props.source.metadata.x + TheGraph.nodeSize;
-      var sourceY = this.props.source.metadata.y + this.props.sourcePort.y;
-      var targetX = this.props.target.metadata.x + 0;
-      var targetY = this.props.target.metadata.y + this.props.targetPort.y;
+      var sourceX = this.props.sX;
+      var sourceY = this.props.sY;
+      var targetX = this.props.tX;
+      var targetY = this.props.tY;
 
       var c1X, c1Y, c2X, c2Y;
       if (targetX < sourceX+CURVE && Math.abs(targetY-sourceY) > TheGraph.nodeSize) {
@@ -42,6 +52,7 @@
         c2X, c2Y,
         targetX, targetY
       ].join(" ");
+
       return (
         React.DOM.g(
           {className: "edge route"+this.props.route},
