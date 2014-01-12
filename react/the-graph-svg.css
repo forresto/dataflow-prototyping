@@ -76,6 +76,7 @@ text {
   font-size: 40px;
   fill: hsl(0, 0%, 75%);
   text-anchor: middle;
+  /*alignment-baseline: middle;*/
   dominant-baseline: central;
 
   transition-property: font-size, fill;
@@ -100,7 +101,8 @@ text {
 .port-label {
   visibility: hidden;
   font-size: 6px;
-  alignment-baseline: middle;
+  /*alignment-baseline: middle;*/
+  dominant-baseline: central;
 }
 
 .inports .port-label {
