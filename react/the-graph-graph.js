@@ -114,8 +114,12 @@
         var minY = Infinity;
         var maxX = -Infinity;
         var maxY = -Infinity;
-        var members = group.nodes.map(function(key){
-          var process = graph.processes[key];
+
+        var nodes = group.nodes;
+        var len = nodes.length;
+        for (var i=0; i<len; i++) {
+          var key = nodes[i];
+          var process = graph.processes[ key ];
           if (!process) {
             throw new Error("Didn't find group member "+key+" when making group "+group.name);
           }
@@ -123,8 +127,7 @@
           if (process.metadata.y < minY) { minY = process.metadata.y; }
           if (process.metadata.x > maxX) { maxX = process.metadata.x; }
           if (process.metadata.y > maxY) { maxY = process.metadata.y; }
-          return process;
-        });
+        }
         if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) {
           minX = 0;
           minY = 0;
