@@ -108,6 +108,10 @@
       if (label === undefined || label === "") {
         label = this.props.process.key;
       }
+      var sublabel = this.props.process.component;
+      if (sublabel === label) {
+        sublabel = "";
+      }
       var x = this.props.x;
       var y = this.props.y;
 
@@ -150,7 +154,7 @@
           React.DOM.rect({
             className: "node-bg", // HACK to make the whole g draggable
             width: TheGraph.nodeSize,
-            height: TheGraph.nodeSize + 20
+            height: TheGraph.nodeSize + 35
           }),
           React.DOM.rect({
             className: "node-rect drag",
@@ -178,6 +182,12 @@
             x: TheGraph.nodeSize/2,
             y: TheGraph.nodeSize + 20,
             children: label
+          }),
+          React.DOM.text({
+            className: "node-sublabel",
+            x: TheGraph.nodeSize/2,
+            y: TheGraph.nodeSize + 35,
+            children: sublabel
           })
         )
       );

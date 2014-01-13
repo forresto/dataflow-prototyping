@@ -66,11 +66,20 @@ text {
   text-anchor: start;
 }
 
-.node-label {
+.node-label,
+.node-sublabel {
   text-anchor: middle;
 }
 .small .node-label {
   visibility: hidden;
+}
+
+.node-sublabel {
+  font-size: 9px;
+  visibility: hidden;
+}
+.big .node-sublabel {
+  visibility: visible;
 }
 
 .node-icon {
