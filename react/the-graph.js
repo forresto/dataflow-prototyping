@@ -92,6 +92,9 @@
       this.mousePressed = true;
       this.mouseX = x;
       this.mouseY = y;
+
+      window.addEventListener("mousemove", this.onMouseMove);
+      window.addEventListener("mouseup", this.onMouseUp);
     },
     onMouseMove: function (event) {
       // Pan
@@ -116,14 +119,16 @@
     },
     onMouseUp: function (event) {
       this.mousePressed = false;
+      window.removeEventListener("mousemove", this.onMouseMove);
+      window.removeEventListener("mouseup", this.onMouseUp);
     },
     changeHighlight: function (event) {
       console.log(event);
     },
     componentDidMount: function (rootNode) {
       // Mouse listen to window for drag/release outside
-      window.addEventListener("mousemove", this.onMouseMove);
-      window.addEventListener("mouseup", this.onMouseUp);
+      // window.addEventListener("mousemove", this.onMouseMove);
+      // window.addEventListener("mouseup", this.onMouseUp);
 
       // Custom event listeners
       this.getDOMNode().addEventListener("the-graph-node-highlight", this.changeHighlight);

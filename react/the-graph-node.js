@@ -18,8 +18,8 @@
     },
     componentDidMount: function () {
       // Mouse listen to window for drag/release outside
-      window.addEventListener("mousemove", this.onMouseMove);
-      window.addEventListener("mouseup", this.onMouseUp);
+      // window.addEventListener("mousemove", this.onMouseMove);
+      // window.addEventListener("mouseup", this.onMouseUp);
 
       // Right-click
       this.getDOMNode().addEventListener("contextmenu", this.contextMenu);
@@ -44,6 +44,9 @@
       this.mouseX = x;
       this.mouseY = y;
       this.mousePressed = true;
+
+      window.addEventListener("mousemove", this.onMouseMove);
+      window.addEventListener("mouseup", this.onMouseUp);
 
       if (event.button !== 0) {
         // Show context menu
@@ -92,6 +95,9 @@
         // Don't fire on graph
         event.stopPropagation();
         this.mousePressed = null;
+
+        window.removeEventListener("mousemove", this.onMouseMove);
+        window.removeEventListener("mouseup", this.onMouseUp);
       }
     },
     shouldComponentUpdate: function (nextProps, nextState) {
