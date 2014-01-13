@@ -34,6 +34,9 @@ svg {
   fill: hsla(0, 0%, 10%, 0.9);
   stroke: none;
 }
+.node-bg {
+  opacity: 0;
+}
 
 .edge-bg {
   fill: none;
@@ -60,8 +63,7 @@ text {
   text-rendering: geometricPrecision; /* makes text scale smoothly */
   font-size: 14px;
   fill: white;
-  text-anchor: start;  
-  cursor: default;
+  text-anchor: start;
 }
 
 .node-label {
