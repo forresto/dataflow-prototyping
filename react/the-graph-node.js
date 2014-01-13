@@ -26,7 +26,6 @@
     },
     mouseX: 0,
     mouseY: 0,
-    mousePressed: false,
     onMouseDown: function (event) {
       // Don't drag graph
       event.stopPropagation();
@@ -41,17 +40,17 @@
         y = event.pageY;
       }
 
-      this.mouseX = x;
-      this.mouseY = y;
-      this.mousePressed = true;
-
-      window.addEventListener("mousemove", this.onMouseMove);
-      window.addEventListener("mouseup", this.onMouseUp);
-
       if (event.button !== 0) {
         // Show context menu
         this.highlight();
+        return;
       }
+
+      this.mouseX = x;
+      this.mouseY = y;
+
+      window.addEventListener("mousemove", this.onMouseMove);
+      window.addEventListener("mouseup", this.onMouseUp);
 
     },
     highlight: function () {
@@ -62,43 +61,38 @@
       this.getDOMNode().dispatchEvent(highlightEvent);
     },
     onMouseMove: function (event) {
-      if (this.mousePressed) {
-        // Don't fire on graph
-        event.stopPropagation();
+      // Don't fire on graph
+      event.stopPropagation();
 
-        // Touch to mouse
-        var x, y;
-        if (event.touches) {
-          x = event.touches[0].pageX;
-          y = event.touches[0].pageY;
-        } else {
-          x = event.pageX;
-          y = event.pageY;
-        }
-
-        var deltaX = Math.round( (x - this.mouseX) / this.props.scale );
-        var deltaY = Math.round( (y - this.mouseY) / this.props.scale );
-        this.props.process.metadata.x += deltaX;
-        this.props.process.metadata.y += deltaY;
-        this.mouseX = x;
-        this.mouseY = y;
-
-        var highlightEvent = new CustomEvent('the-graph-node-move', { 
-          detail: null, 
-          bubbles: true
-        });
-        this.getDOMNode().dispatchEvent(highlightEvent);
+      // Touch to mouse
+      var x, y;
+      if (event.touches) {
+        x = event.touches[0].pageX;
+        y = event.touches[0].pageY;
+      } else {
+        x = event.pageX;
+        y = event.pageY;
       }
+
+      var deltaX = Math.round( (x - this.mouseX) / this.props.scale );
+      var deltaY = Math.round( (y - this.mouseY) / this.props.scale );
+      this.props.process.metadata.x += deltaX;
+      this.props.process.metadata.y += deltaY;
+      this.mouseX = x;
+      this.mouseY = y;
+
+      var highlightEvent = new CustomEvent('the-graph-node-move', { 
+        detail: null, 
+        bubbles: true
+      });
+      this.getDOMNode().dispatchEvent(highlightEvent);
     },
     onMouseUp: function (event) {
-      if (this.mousePressed) {
-        // Don't fire on graph
-        event.stopPropagation();
-        this.mousePressed = null;
+      // Don't fire on graph
+      event.stopPropagation();
 
-        window.removeEventListener("mousemove", this.onMouseMove);
-        window.removeEventListener("mouseup", this.onMouseUp);
-      }
+      window.removeEventListener("mousemove", this.onMouseMove);
+      window.removeEventListener("mouseup", this.onMouseUp);
     },
     shouldComponentUpdate: function (nextProps, nextState) {
       // Only rerender if moved

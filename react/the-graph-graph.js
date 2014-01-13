@@ -14,6 +14,22 @@
     },
     componentDidMount: function () {
       this.getDOMNode().addEventListener("the-graph-node-move", this.markDirty);
+      this.getDOMNode().addEventListener("the-graph-group-move", this.moveGroup);
+    },
+    moveGroup: function (event) {
+      var graph = this.state.graph;
+      var group = graph.groups[ event.detail.index ];
+      var nodes = group.nodes;
+
+      // Move each group member
+      var len = nodes.length;
+      for (var i=0; i<len; i++) {
+        var node = graph.processes[ nodes[i] ];
+        node.metadata.x += event.detail.x;
+        node.metadata.y += event.detail.y;
+      }
+
+      this.markDirty();
     },
     getOutport: function (processName, portName) {
       var ports = this.getPorts(processName);
@@ -89,6 +105,7 @@
       });
 
       // Groups
+      var index = -1;
       var groups = graph.groups.map(function (group) {
         if (group.nodes.length < 1) {
           return;
@@ -115,11 +132,14 @@
           maxY = 0;
           return;
         }
+        index++;
         return TheGraph.Group({
+          index: index,
           minX: minX,
           minY: minY,
           maxX: maxX,
           maxY: maxY,
+          scale: self.props.scale,
           label: group.name,
           description: group.metadata.description
         });

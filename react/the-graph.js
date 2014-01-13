@@ -81,6 +81,11 @@
     mouseY: 0,
     mousePressed: false,
     onMouseDown: function (event) {
+      if (event.button !== 0) {
+        // Context menu
+        return;
+      }
+
       var x, y;
       if (event.touches) {
         x = event.touches[0].pageX;
