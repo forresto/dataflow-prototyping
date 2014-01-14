@@ -9,7 +9,10 @@
   // Node view
 
   TheGraph.Node = React.createClass({
-    mixins: [TheGraph.mixins.FakeMouse],
+    mixins: [
+      TheGraph.mixins.FakeMouse,
+      TheGraph.mixins.Tooltip
+    ],
     getInitialState: function() {
       return {
         // Random icon just for fun
@@ -104,10 +107,7 @@
     render: function() {
       var metadata = this.props.process.metadata;
 
-      var label = metadata.label;
-      if (label === undefined || label === "") {
-        label = this.props.process.key;
-      }
+      var label = this.props.label;
       var sublabel = this.props.process.component;
       if (sublabel === label) {
         sublabel = "";
@@ -148,6 +148,7 @@
             className: "node drag",
             name: this.props.key,
             key: this.props.key,
+            title: label,
             transform: "translate("+x+","+y+")",
             onMouseDown: this.onMouseDown
           },

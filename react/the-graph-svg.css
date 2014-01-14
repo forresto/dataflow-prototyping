@@ -38,18 +38,27 @@ svg {
   opacity: 0;
 }
 
-.edge-bg {
+path {
   fill: none;
+}
+.edge-bg {
   stroke: black;
   stroke-width: 4px;
 }
+.edge:hover .edge-bg {
+  stroke: gray;  
+}
 .edge-fg {
-  fill: none;
   stroke: white;
   stroke-width: 2px;
 
   transition-property: stroke-width;
   transition-duration: 0.5s;
+}
+.edge-touch {
+  stroke: white;
+  stroke-width: 10px;
+  opacity: 0;
 }
 .small .edge-bg {
   stroke-width: 8px;
@@ -80,6 +89,23 @@ text {
 }
 .big .node-sublabel {
   visibility: visible;
+}
+
+.tooltip {
+  opacity: 1.0;
+
+  transition-property: opacity;
+  transition-duration: 0.5s;
+}
+.tooltip.hidden {
+  opacity: 0;
+}
+.tooltip-bg {
+  fill: black;
+  opacity: 0.75;
+}
+.tooltip-label {
+  font-size: 10px;
 }
 
 .node-icon {

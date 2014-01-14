@@ -14,8 +14,10 @@
   // React setup
   React.initializeTouchEvents(true);
 
-  // Touch to mouse
+  // Mixins to use throughout project
   TheGraph.mixins = {};
+
+  // Touch to mouse
   TheGraph.mixins.FakeMouse = {
     onTouchStart: function (event) {
       event.preventDefault();
@@ -42,6 +44,36 @@
     }
   };
 
+  // Show fake tooltip
+  TheGraph.mixins.Tooltip = {
+    showTooltip: function (event) {
+      var tooltipEvent = new CustomEvent('the-graph-tooltip', { 
+        detail: {
+          tooltip: this.props.label,
+          x: event.pageX,
+          y: event.pageY
+        }, 
+        bubbles: true
+      });
+      this.getDOMNode().dispatchEvent(tooltipEvent);
+    },
+    hideTooltip: function (event) {
+      var tooltipEvent = new CustomEvent('the-graph-tooltip', { 
+        detail: {
+          tooltip: "",
+          x: event.pageX,
+          y: event.pageY
+        }, 
+        bubbles: true
+      });
+      this.getDOMNode().dispatchEvent(tooltipEvent);
+    },
+    componentDidMount: function (rootNode) {
+      this.getDOMNode().addEventListener("mousemove", this.showTooltip);
+      this.getDOMNode().addEventListener("mouseleave", this.hideTooltip);
+    }
+  };
+
 
   TheGraph.App = React.createClass({
     minZoom: 0.04,
@@ -52,7 +84,11 @@
         y: 0,
         scale: 1,
         width: this.props.width,
-        height: this.props.height
+        height: this.props.height,
+        tooltip: "",
+        tooltipX: 0,
+        tooltipY: 0,
+        tooltipVisible: true
       };
     },
     onWheel: function (event) {
@@ -79,7 +115,6 @@
     },
     mouseX: 0,
     mouseY: 0,
-    mousePressed: false,
     onMouseDown: function (event) {
       if (event.button !== 0) {
         // Context menu
@@ -94,7 +129,6 @@
         x = event.pageX;
         y = event.pageY;
       }
-      this.mousePressed = true;
       this.mouseX = x;
       this.mouseY = y;
 
@@ -103,37 +137,50 @@
     },
     onMouseMove: function (event) {
       // Pan
-      if (this.mousePressed) {
-        var x, y;
-        if (event.touches) {
-          x = event.touches[0].pageX;
-          y = event.touches[0].pageY;
-        } else {
-          x = event.pageX;
-          y = event.pageY;
-        }
-        var deltaX = x - this.mouseX;
-        var deltaY = y - this.mouseY;
-        this.setState({
-          x: this.state.x + deltaX,
-          y: this.state.y + deltaY
-        });
-        this.mouseX = x;
-        this.mouseY = y;
+      var x, y;
+      if (event.touches) {
+        x = event.touches[0].pageX;
+        y = event.touches[0].pageY;
+      } else {
+        x = event.pageX;
+        y = event.pageY;
       }
+      var deltaX = x - this.mouseX;
+      var deltaY = y - this.mouseY;
+      this.setState({
+        x: this.state.x + deltaX,
+        y: this.state.y + deltaY
+      });
+      this.mouseX = x;
+      this.mouseY = y;
     },
     onMouseUp: function (event) {
-      this.mousePressed = false;
       window.removeEventListener("mousemove", this.onMouseMove);
       window.removeEventListener("mouseup", this.onMouseUp);
     },
     changeHighlight: function (event) {
       console.log(event);
     },
+    changeTooltip: function (event) {
+      var tooltip = event.detail.tooltip;
+
+      // HACK til 0.9.0
+      if (tooltip !== this.state.tooltip) {
+        this.refs.tooltip.changeLabel(tooltip);
+      }
+
+      this.setState({
+        tooltip: tooltip,
+        tooltipVisible: !(tooltip === ""),
+        tooltipX: event.detail.x + 10,
+        tooltipY: event.detail.y
+      });
+    },
     componentDidMount: function (rootNode) {
       // Mouse listen to window for drag/release outside
-      // window.addEventListener("mousemove", this.onMouseMove);
-      // window.addEventListener("mouseup", this.onMouseUp);
+
+      // Tooltip listener
+      this.getDOMNode().addEventListener("the-graph-tooltip", this.changeTooltip);
 
       // Custom event listeners
       this.getDOMNode().addEventListener("the-graph-node-highlight", this.changeHighlight);
@@ -182,16 +229,18 @@
               scale: this.state.scale
             })
           ),
-          React.DOM.g(
-            {
-              className: "highlight",
-              transform: transform
-            }//,
-            // TheGraph.NodeMenu({
-            //   graph: this.props.graph,
-            //   scale: this.state.scale
-            // })
-          )
+          // React.DOM.g(
+          //   {
+          //     className: "highlight"
+          //   }
+          // ),
+          TheGraph.Tooltip({
+            ref: "tooltip",
+            x: this.state.tooltipX,
+            y: this.state.tooltipY,
+            visible: this.state.tooltipVisible,
+            label: this.state.tooltip
+          })
         )
       );
     }

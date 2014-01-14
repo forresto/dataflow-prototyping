@@ -95,10 +95,14 @@
         if (!process.metadata) {
           process.metadata = {x:0, y:0};
         }
+        if (!process.metadata.label || process.metadata.label === "") {
+          process.metadata.label = key;
+        }
         return TheGraph.Node({
           key: key,
           x: process.metadata.x,
           y: process.metadata.y,
+          label: process.metadata.label,
           scale: self.props.scale,
           process: process
         });
@@ -171,11 +175,17 @@
         } else {
           route = 0;
         }
+
+        // Label
+        var label = source.metadata.label + " " + connection.src.port.toUpperCase() + " → " + 
+          connection.tgt.port.toUpperCase() + " " + target.metadata.label + "";
+
         return TheGraph.Edge({
           sX: source.metadata.x + TheGraph.nodeSize,
           sY: source.metadata.y + sourcePort.y,
           tX: target.metadata.x,
           tY: target.metadata.y + targetPort.y,
+          label: label,
           route: route
         });
       });

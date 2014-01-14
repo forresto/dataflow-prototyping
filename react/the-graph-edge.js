@@ -10,6 +10,7 @@
   // Edge view
 
   TheGraph.Edge = React.createClass({
+    mixins: [TheGraph.mixins.Tooltip],
     componentWillMount: function() {
       // Todo: listen for source/target moving; change state
     },
@@ -23,7 +24,7 @@
         nextProps.route !== this.props.route
       );
     },
-    render: function() {
+    render: function () {
       var sourceX = this.props.sX;
       var sourceY = this.props.sY;
       var targetX = this.props.tX;
@@ -55,13 +56,20 @@
 
       return (
         React.DOM.g(
-          {className: "edge route"+this.props.route},
+          {
+            className: "edge route"+this.props.route,
+            title: this.props.label
+          },
           React.DOM.path({
             className: "edge-bg",
             d: path
           }),
           React.DOM.path({
             className: "edge-fg",
+            d: path
+          }),
+          React.DOM.path({
+            className: "edge-touch",
             d: path
           })
         )
