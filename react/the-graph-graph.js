@@ -177,7 +177,7 @@
         }
 
         // Label
-        var label = source.metadata.label + " " + connection.src.port.toUpperCase() + " → " + 
+        var label = source.metadata.label + " " + connection.src.port.toUpperCase() + " -> " + 
           connection.tgt.port.toUpperCase() + " " + target.metadata.label + "";
 
         return TheGraph.Edge({
