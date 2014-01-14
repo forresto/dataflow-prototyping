@@ -69,7 +69,7 @@
       this.getDOMNode().dispatchEvent(tooltipEvent);
     },
     componentDidMount: function (rootNode) {
-      this.getDOMNode().addEventListener("mousemove", this.showTooltip);
+      this.getDOMNode().addEventListener("mouseenter", this.showTooltip);
       this.getDOMNode().addEventListener("mouseleave", this.hideTooltip);
     }
   };
@@ -164,16 +164,27 @@
     changeTooltip: function (event) {
       var tooltip = event.detail.tooltip;
 
+      // if (this.state.scale > 0.4 && event.detail.type === "node") {
+      //   // Don't show node when titles are shown
+      //   return;
+      // }
+
       // HACK til 0.9.0
       if (tooltip !== this.state.tooltip) {
         this.refs.tooltip.changeLabel(tooltip);
       }
 
+      var x = event.detail.x + 10;
+      var width = tooltip.length*6;
+      if (x + width > this.props.width) {
+        x = event.detail.x - width - 10;
+      }
+
       this.setState({
         tooltip: tooltip,
         tooltipVisible: !(tooltip === ""),
-        tooltipX: event.detail.x + 10,
-        tooltipY: event.detail.y
+        tooltipX: x,
+        tooltipY: event.detail.y + 20
       });
     },
     componentDidMount: function (rootNode) {

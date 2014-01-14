@@ -10,8 +10,8 @@
 
   TheGraph.Node = React.createClass({
     mixins: [
-      TheGraph.mixins.FakeMouse,
-      TheGraph.mixins.Tooltip
+      TheGraph.mixins.FakeMouse
+      // TheGraph.mixins.Tooltip
     ],
     getInitialState: function() {
       return {
