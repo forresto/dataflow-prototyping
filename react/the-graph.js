@@ -80,6 +80,10 @@
       this.getDOMNode().dispatchEvent(tooltipEvent);
     },
     componentDidMount: function (rootNode) {
+      if (navigator && navigator.userAgent.indexOf("Firefox") !== -1) {
+        // HACK Ff does native tooltips on svg elements
+        return;
+      }
       var tooltipper = this.getTooltipTrigger();
       tooltipper.addEventListener("mouseenter", this.showTooltip);
       tooltipper.addEventListener("mouseleave", this.hideTooltip);
@@ -212,7 +216,7 @@
     },
     hideTooltip: function (event) {
       this.setState({
-        tooltipVisible: false,
+        tooltipVisible: false
       });
     },
     componentDidMount: function (rootNode) {
