@@ -6,7 +6,11 @@
     context.TheGraph = {
       nodeSize: 72,
       nodeRadius: 8,
-      nodeSide: 56
+      nodeSide: 56,
+      // Zoom breakpoints
+      zbpBig: 1.2,
+      zbpNormal: 0.4,
+      zbpSmall: 0.01
     }; 
   }
   var TheGraph = context.TheGraph;
@@ -24,6 +28,7 @@
   TheGraph.mixins = {};
 
   // Touch to mouse
+  // Class must have onMouseDown onMouseMove onMouseUp
   TheGraph.mixins.FakeMouse = {
     onTouchStart: function (event) {
       event.preventDefault();
@@ -51,8 +56,11 @@
   };
 
   // Show fake tooltip
+  // Class must have getTooltipTrigger (dom node) and shouldShowTooltip (boolean)
   TheGraph.mixins.Tooltip = {
     showTooltip: function (event) {
+      if ( !this.shouldShowTooltip() ) { return; }
+
       var tooltipEvent = new CustomEvent('the-graph-tooltip', { 
         detail: {
           tooltip: this.props.label,
@@ -64,12 +72,9 @@
       this.getDOMNode().dispatchEvent(tooltipEvent);
     },
     hideTooltip: function (event) {
-      var tooltipEvent = new CustomEvent('the-graph-tooltip', { 
-        detail: {
-          tooltip: "",
-          x: event.pageX,
-          y: event.pageY
-        }, 
+      if ( !this.shouldShowTooltip() ) { return; }
+
+      var tooltipEvent = new CustomEvent('the-graph-tooltip-hide', { 
         bubbles: true
       });
       this.getDOMNode().dispatchEvent(tooltipEvent);
@@ -191,16 +196,6 @@
     changeTooltip: function (event) {
       var tooltip = event.detail.tooltip;
 
-      // if (this.state.scale > 0.4 && event.detail.type === "node") {
-      //   // Don't show node when titles are shown
-      //   return;
-      // }
-
-      // HACK til 0.9.0
-      // if (tooltip !== this.state.tooltip) {
-      //   this.refs.tooltip.changeLabel(tooltip);
-      // }
-
       // Don't go over right edge
       var x = event.detail.x + 10;
       var width = tooltip.length*6;
@@ -210,9 +205,14 @@
 
       this.setState({
         tooltip: tooltip,
-        tooltipVisible: !(tooltip === ""),
+        tooltipVisible: true,
         tooltipX: x,
         tooltipY: event.detail.y + 20
+      });
+    },
+    hideTooltip: function (event) {
+      this.setState({
+        tooltipVisible: false,
       });
     },
     componentDidMount: function (rootNode) {
@@ -220,6 +220,7 @@
 
       // Tooltip listener
       this.getDOMNode().addEventListener("the-graph-tooltip", this.changeTooltip);
+      this.getDOMNode().addEventListener("the-graph-tooltip-hide", this.hideTooltip);
 
       // Custom event listeners
       this.getDOMNode().addEventListener("the-graph-node-highlight", this.changeHighlight);
@@ -240,7 +241,7 @@
       var y = this.state.y;
       var transform = "matrix("+sc+",0,0,"+sc+","+x+","+y+")";
 
-      var scaleClass = sc > 1.2 ? "big" : ( sc < 0.4 ? "small" : "normal");
+      var scaleClass = sc > TheGraph.zbpBig ? "big" : ( sc > TheGraph.zbpNormal ? "normal" : "small");
 
       return React.DOM.div(
         {
@@ -265,7 +266,8 @@
             },
             TheGraph.Graph({
               graph: this.props.graph,
-              scale: this.state.scale
+              scale: this.state.scale,
+              app: this
             })
           ),
           // React.DOM.g(

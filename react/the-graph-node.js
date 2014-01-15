@@ -10,8 +10,8 @@
 
   TheGraph.Node = React.createClass({
     mixins: [
-      TheGraph.mixins.FakeMouse
-      // TheGraph.mixins.Tooltip
+      TheGraph.mixins.FakeMouse,
+      TheGraph.mixins.Tooltip
     ],
     getInitialState: function() {
       return {
@@ -77,8 +77,10 @@
         y = event.pageY;
       }
 
-      var deltaX = Math.round( (x - this.mouseX) / this.props.scale );
-      var deltaY = Math.round( (y - this.mouseY) / this.props.scale );
+      var scale = this.props.app.state.scale;
+
+      var deltaX = Math.round( (x - this.mouseX) / scale );
+      var deltaY = Math.round( (y - this.mouseY) / scale );
       this.props.process.metadata.x += deltaX;
       this.props.process.metadata.y += deltaY;
       this.mouseX = x;
@@ -96,6 +98,13 @@
 
       window.removeEventListener("mousemove", this.onMouseMove);
       window.removeEventListener("mouseup", this.onMouseUp);
+    },
+    getTooltipTrigger: function () {
+      return this.getDOMNode();
+    },
+    shouldShowTooltip: function () {
+      // HACK
+      return (this.props.app.state.scale < TheGraph.zbpNormal);
     },
     shouldComponentUpdate: function (nextProps, nextState) {
       // Only rerender if moved

@@ -27,6 +27,9 @@
     getTooltipTrigger: function () {
       return this.refs.touch.getDOMNode();
     },
+    shouldShowTooltip: function () {
+      return true;
+    },
     render: function () {
       var sourceX = this.props.sX;
       var sourceY = this.props.sY;

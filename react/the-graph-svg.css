@@ -95,7 +95,7 @@ text {
   opacity: 1.0;
 
   transition-property: opacity;
-  transition-duration: 0.5s;
+  transition-duration: 0.3s;
 }
 .tooltip.hidden {
   opacity: 0;

@@ -12,6 +12,10 @@
       if (prevProps.label != this.props.label) {
         this.refs.label.getDOMNode().textContent = this.props.label;
       }
+      if (prevProps.visible != this.props.visible) {
+        var c = "tooltip" + (this.props.visible ? "" : " hidden");
+        this.getDOMNode().setAttribute("class", c);
+      }
     },
     render: function() {
       return (

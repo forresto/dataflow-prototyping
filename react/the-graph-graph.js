@@ -103,7 +103,7 @@
           x: process.metadata.x,
           y: process.metadata.y,
           label: process.metadata.label,
-          scale: self.props.scale,
+          app: self.props.app,
           process: process
         });
       });
