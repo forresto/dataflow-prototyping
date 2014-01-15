@@ -7,9 +7,11 @@
   // Port view
 
   TheGraph.Tooltip = React.createClass({
-    // HACK til 0.9.0
-    changeLabel: function (label) {
-      this.refs.label.getDOMNode().textContent = label;
+    componentDidUpdate: function (prevProps, prevState, rootNode) {
+      // HACK til 0.9.0
+      if (prevProps.label != this.props.label) {
+        this.refs.label.getDOMNode().textContent = this.props.label;
+      }
     },
     render: function() {
       return (

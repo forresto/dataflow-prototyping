@@ -24,6 +24,9 @@
         nextProps.route !== this.props.route
       );
     },
+    getTooltipTrigger: function () {
+      return this.refs.touch.getDOMNode();
+    },
     render: function () {
       var sourceX = this.props.sX;
       var sourceY = this.props.sY;
@@ -70,6 +73,7 @@
           }),
           React.DOM.path({
             className: "edge-touch",
+            ref: "touch",
             d: path
           })
         )

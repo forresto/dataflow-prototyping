@@ -14,6 +14,12 @@
   // React setup
   React.initializeTouchEvents(true);
 
+  // rAF shim
+  var requestAnimationFrame = window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.msRequestAnimationFrame;
+
   // Mixins to use throughout project
   TheGraph.mixins = {};
 
@@ -69,8 +75,9 @@
       this.getDOMNode().dispatchEvent(tooltipEvent);
     },
     componentDidMount: function (rootNode) {
-      this.getDOMNode().addEventListener("mouseenter", this.showTooltip);
-      this.getDOMNode().addEventListener("mouseleave", this.hideTooltip);
+      var tooltipper = this.getTooltipTrigger();
+      tooltipper.addEventListener("mouseenter", this.showTooltip);
+      tooltipper.addEventListener("mouseleave", this.hideTooltip);
     }
   };
 
@@ -91,19 +98,39 @@
         tooltipVisible: true
       };
     },
+    zoomFactor: 0,
+    zoomX: 0,
+    zoomY: 0,
     onWheel: function (event) {
       // Don't bounce
       event.preventDefault();
 
-      var scale = this.state.scale + (this.state.scale * event.deltaY/500);
-      if (scale < this.minZoom) { return; }
+      if (!this.zoomFactor) { // WAT
+        this.zoomFactor = 0;
+      }
+
+      this.zoomFactor += event.deltaY;
+      this.zoomX = event.nativeEvent.pageX;
+      this.zoomY = event.nativeEvent.pageY;
+      requestAnimationFrame(this.scheduleZoom);
+    },
+    scheduleZoom: function () {
+      if (isNaN(this.zoomFactor)) { return; };
+
+      var scale = this.state.scale + (this.state.scale * this.zoomFactor/500);
+      this.zoomFactor = 0;
+
+      if (scale < this.minZoom) { 
+        scale = this.minZoom;
+      }
+      if (scale === this.state.scale) { return; }
 
       // Zoom and pan transform-origin equivalent
       var scaleD = scale / this.state.scale;
       var currentX = this.state.x;
       var currentY = this.state.y;
-      var oX = event.nativeEvent.pageX;
-      var oY = event.nativeEvent.pageY;
+      var oX = this.zoomX;
+      var oY = this.zoomY;
       var x = scaleD * (currentX - oX) + oX;
       var y = scaleD * (currentY - oY) + oY;
 
@@ -170,10 +197,11 @@
       // }
 
       // HACK til 0.9.0
-      if (tooltip !== this.state.tooltip) {
-        this.refs.tooltip.changeLabel(tooltip);
-      }
+      // if (tooltip !== this.state.tooltip) {
+      //   this.refs.tooltip.changeLabel(tooltip);
+      // }
 
+      // Don't go over right edge
       var x = event.detail.x + 10;
       var width = tooltip.length*6;
       if (x + width > this.props.width) {
