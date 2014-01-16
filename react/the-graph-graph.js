@@ -12,9 +12,25 @@
         graph: this.props.graph
       };
     },
+    autolayout: function (layoutOptions) {
+      // xhr to kieler and update the graph
+      kieler(this.state.graph, layoutOptions, function (g) {
+        this.setState({graph: g});
+      }.bind(this));
+      this.dirty = true;
+    },
+    componentWillMount: function () {
+      this.autolayout();
+    },
     componentDidMount: function () {
       this.getDOMNode().addEventListener("the-graph-node-move", this.markDirty);
       this.getDOMNode().addEventListener("the-graph-group-move", this.moveGroup);
+
+      // Listen to kieler custom event from dat.gui
+      window.addEventListener('kieler', function (event) {
+        var layoutOptions = event.detail;
+        this.autolayout(layoutOptions);
+      }.bind(this));
     },
     moveGroup: function (event) {
       var graph = this.state.graph;

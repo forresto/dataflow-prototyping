@@ -55,9 +55,11 @@
     var countIdx = 0;
     var nodes = nodeKeys.map(function (key) {
       var process = processes[key];
+      console.log(Math.max(72, 8*process.metadata.label.length));
+
       kGraph.children.push({id: key, 
                             labels: [{text: process.metadata.label}], 
-                            width: 72, 
+                            width: Math.max(72, 8*process.metadata.label.length), 
                             height: 72,
                             ports: []});
       idx[key] = countIdx++;
