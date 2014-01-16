@@ -189,6 +189,7 @@
     var kGraph = toKieler(graph);
     var options = gui || {};
     options.algorithm = "de.cau.cs.kieler.klay.layered";
+    options.layoutHierarchy = true;
 
     // perform the layout request
     kielerLayout({
