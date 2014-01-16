@@ -55,8 +55,6 @@
     var countIdx = 0;
     var nodes = nodeKeys.map(function (key) {
       var process = processes[key];
-      console.log(Math.max(72, 8*process.metadata.label.length));
-
       kGraph.children.push({id: key, 
                             labels: [{text: process.metadata.label}], 
                             width: Math.max(72, 8*process.metadata.label.length), 
@@ -116,8 +114,10 @@
       group.nodes.map(function (n) {
         node.children.push(kGraph.children[idx[n]]);
         node.edges.push(kGraph.edges.filter(function (edge) {
-          if ((edge.source === n) || (edge.target === n)) {
-            return edge;
+          if (edge) {
+            if ((edge.source === n) || (edge.target === n)) {
+              return edge;
+            }
           }
         })[0]);
 
@@ -137,7 +137,7 @@
     // subgraph/group
     kGraph.children.clean();
     kGraph.edges.clean();
-
+    console.log(JSON.stringify(kGraph));
     return kGraph;
   };
 
@@ -158,11 +158,13 @@
           return el;
         // TODO: too ugly! we need a recursive method
         if (el.children) {
+          // we have a child node (subgraph member)
           var grandchildren = el.children;
           var foo = grandchildren.filter(function (ell) {
             if (ell.id === key) {
-              process.metadata.x = ell.x;
-              process.metadata.y = ell.y;
+              // we should add mom's coords to the child
+              process.metadata.x = ell.x + el.x;
+              process.metadata.y = ell.y + el.y;
               return ell;
             }
           })[0];
