@@ -57,7 +57,7 @@
       var process = processes[key];
       kGraph.children.push({id: key, 
                             labels: [{text: process.metadata.label}], 
-                            width: Math.max(72, 8*process.metadata.label.length), 
+                            width: 92, // Math.max(72, 8*process.metadata.label.length), 
                             height: 72,
                             ports: []});
       idx[key] = countIdx++;
@@ -137,7 +137,7 @@
     // subgraph/group
     kGraph.children.clean();
     kGraph.edges.clean();
-    console.log(JSON.stringify(kGraph));
+    // console.log(JSON.stringify(kGraph));
     return kGraph;
   };
 
