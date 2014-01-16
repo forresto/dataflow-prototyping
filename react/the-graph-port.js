@@ -20,7 +20,7 @@
             r: 4
           }),
           React.DOM.text({
-            className: "port-label",
+            className: "port-label port-label-"+this.props.label.length,
             x: this.props.x,
             y: this.props.y,
             children: this.props.label

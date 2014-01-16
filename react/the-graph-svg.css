@@ -34,19 +34,31 @@ svg {
   fill: hsla(0, 0%, 10%, 0.9);
   stroke: none;
 }
+.node-bg {
+  opacity: 0;
+}
 
-.edge-bg {
+path {
   fill: none;
+}
+.edge-bg {
   stroke: black;
   stroke-width: 4px;
 }
+.edge:hover .edge-bg {
+  stroke: gray;  
+}
 .edge-fg {
-  fill: none;
   stroke: white;
   stroke-width: 2px;
 
   transition-property: stroke-width;
   transition-duration: 0.5s;
+}
+.edge-touch {
+  stroke: white;
+  stroke-width: 10px;
+  opacity: 0;
 }
 .small .edge-bg {
   stroke-width: 8px;
@@ -60,15 +72,40 @@ text {
   text-rendering: geometricPrecision; /* makes text scale smoothly */
   font-size: 14px;
   fill: white;
-  text-anchor: start;  
-  cursor: default;
+  text-anchor: start;
 }
 
-.node-label {
+.node-label,
+.node-sublabel {
   text-anchor: middle;
 }
 .small .node-label {
   visibility: hidden;
+}
+
+.node-sublabel {
+  font-size: 9px;
+  visibility: hidden;
+}
+.big .node-sublabel {
+  visibility: visible;
+}
+
+.tooltip {
+  opacity: 1.0;
+
+  transition-property: opacity;
+  transition-duration: 0.3s;
+}
+.tooltip.hidden {
+  opacity: 0;
+}
+.tooltip-bg {
+  fill: black;
+  opacity: 0.75;
+}
+.tooltip-label {
+  font-size: 10px;
 }
 
 .node-icon {
@@ -76,6 +113,7 @@ text {
   font-size: 40px;
   fill: hsl(0, 0%, 75%);
   text-anchor: middle;
+  /*alignment-baseline: middle;*/
   dominant-baseline: central;
 
   transition-property: font-size, fill;
@@ -100,8 +138,14 @@ text {
 .port-label {
   visibility: hidden;
   font-size: 6px;
-  alignment-baseline: middle;
+  /*alignment-baseline: middle;*/
+  dominant-baseline: central;
 }
+.port-label-8  { font-size: 5.8px; }
+.port-label-9  { font-size: 5.6px; }
+.port-label-10 { font-size: 5.4px; }
+.port-label-11 { font-size: 5.2px; }
+.port-label-12 { font-size: 5px; }
 
 .inports .port-label {
   text-anchor: start;  
