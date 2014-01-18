@@ -111,6 +111,8 @@
     zoomX: 0,
     zoomY: 0,
     onWheel: function (event) {
+      // TODO: fast transform3d here?
+
       // Don't bounce
       event.preventDefault();
 
@@ -194,7 +196,7 @@
       window.removeEventListener("mousemove", this.onMouseMove);
       window.removeEventListener("mouseup", this.onMouseUp);
     },
-    changeHighlight: function (event) {
+    onChangeHighlight: function (event) {
       console.log(event);
     },
     changeTooltip: function (event) {
@@ -219,8 +221,22 @@
         tooltipVisible: false
       });
     },
-    zoomToFit: function () {
-      // TODO
+    onFit: function (event) {
+      var limits = event.detail;
+      limits.minX -= TheGraph.nodeSize;
+      limits.minY -= TheGraph.nodeSize;
+      limits.maxX += TheGraph.nodeSize * 2;
+      limits.maxY += TheGraph.nodeSize * 2;
+
+      var scaleX = this.state.width / (limits.maxX - limits.minX);
+      var scaleY = this.state.height / (limits.maxY - limits.minY);
+      var scale = Math.min(scaleX, scaleY);
+
+      this.setState({
+        x: 0 - limits.minX * scale,
+        y: 0 - limits.minY * scale,
+        scale: scale
+      });
     },
     componentDidMount: function (rootNode) {
       // Mouse listen to window for drag/release outside
@@ -230,13 +246,12 @@
       this.getDOMNode().addEventListener("the-graph-tooltip-hide", this.hideTooltip);
 
       // Custom event listeners
-      this.getDOMNode().addEventListener("the-graph-node-highlight", this.changeHighlight);
+      this.getDOMNode().addEventListener("the-graph-node-highlight", this.onChangeHighlight);
+      this.getDOMNode().addEventListener("the-graph-fit", this.onFit);
 
       // Start zoom from middle if zoom before mouse move
       this.mouseX = Math.floor( window.innerWidth/2 );
       this.mouseY = Math.floor( window.innerHeight/2 );
-
-      this.zoomToFit();
     },
     componentDidUpdate: function (prevProps, prevState, rootNode) {
     },
@@ -274,6 +289,7 @@
               transform: transform
             },
             TheGraph.Graph({
+              ref: "graph",
               graph: this.props.graph,
               scale: this.state.scale,
               app: this

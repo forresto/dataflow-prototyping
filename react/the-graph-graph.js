@@ -3,6 +3,47 @@
 
   var TheGraph = context.TheGraph;
 
+  // Util
+
+  var findMinMax = function (graph, nodes) {
+    if (nodes === undefined) {
+      nodes = Object.keys(graph.processes);
+    }
+    if (nodes.length < 1) {
+      return undefined;
+    }
+    var minX = Infinity;
+    var minY = Infinity;
+    var maxX = -Infinity;
+    var maxY = -Infinity;
+
+    var len = nodes.length;
+    for (var i=0; i<len; i++) {
+      var key = nodes[i];
+      var process = graph.processes[ key ];
+      if (!process) {
+        throw new Error("Didn't find process "+key);
+      }
+      if (process.metadata.x < minX) { minX = process.metadata.x; }
+      if (process.metadata.y < minY) { minY = process.metadata.y; }
+      if (process.metadata.x > maxX) { maxX = process.metadata.x; }
+      if (process.metadata.y > maxY) { maxY = process.metadata.y; }
+    }
+    if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) {
+      minX = 0;
+      minY = 0;
+      maxX = 0;
+      maxY = 0;
+      return;
+    }
+    return {
+      minX: minX,
+      minY: minY,
+      maxX: maxX,
+      maxY: maxY
+    };
+  };
+
   // Graph view
 
   TheGraph.Graph = React.createClass({
@@ -15,6 +56,24 @@
     componentDidMount: function () {
       this.getDOMNode().addEventListener("the-graph-node-move", this.markDirty);
       this.getDOMNode().addEventListener("the-graph-group-move", this.moveGroup);
+
+      // Autofit once on load
+      setTimeout(this.triggerFit, 1);
+    },
+    triggerFit: function () {
+      // Zoom to fit on first load
+      // Calc min/max
+      var limits = findMinMax(this.state.graph);
+      if (!limits) {
+        // No processes, don't fit
+        return;
+      }
+
+      var fitEvent = new CustomEvent('the-graph-fit', { 
+        detail: limits, 
+        bubbles: true
+      });
+      this.getDOMNode().dispatchEvent(fitEvent);
     },
     moveGroup: function (event) {
       var graph = this.state.graph;
