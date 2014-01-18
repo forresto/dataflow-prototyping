@@ -168,47 +168,24 @@
       });
 
       // Groups
-      var index = -1;
+      var index = 0;
       var groups = graph.groups.map(function (group) {
         if (group.nodes.length < 1) {
           return;
         }
-        var minX = Infinity;
-        var minY = Infinity;
-        var maxX = -Infinity;
-        var maxY = -Infinity;
-
-        var nodes = group.nodes;
-        var len = nodes.length;
-        for (var i=0; i<len; i++) {
-          var key = nodes[i];
-          var process = graph.processes[ key ];
-          if (!process) {
-            throw new Error("Didn't find group member "+key+" when making group "+group.name);
-          }
-          if (process.metadata.x < minX) { minX = process.metadata.x; }
-          if (process.metadata.y < minY) { minY = process.metadata.y; }
-          if (process.metadata.x > maxX) { maxX = process.metadata.x; }
-          if (process.metadata.y > maxY) { maxY = process.metadata.y; }
-        }
-        if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) {
-          minX = 0;
-          minY = 0;
-          maxX = 0;
-          maxY = 0;
-          return;
-        }
-        index++;
-        return TheGraph.Group({
+        var limits = findMinMax(graph, group.nodes);
+        var g = TheGraph.Group({
           index: index,
-          minX: minX,
-          minY: minY,
-          maxX: maxX,
-          maxY: maxY,
+          minX: limits.minX,
+          minY: limits.minY,
+          maxX: limits.maxX,
+          maxY: limits.maxY,
           scale: self.props.scale,
           label: group.name,
           description: group.metadata.description
         });
+        index++;
+        return g;
       });
 
       // Edges
