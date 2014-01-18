@@ -219,6 +219,9 @@
         tooltipVisible: false
       });
     },
+    zoomToFit: function () {
+      // TODO
+    },
     componentDidMount: function (rootNode) {
       // Mouse listen to window for drag/release outside
 
@@ -232,6 +235,8 @@
       // Start zoom from middle if zoom before mouse move
       this.mouseX = Math.floor( window.innerWidth/2 );
       this.mouseY = Math.floor( window.innerHeight/2 );
+
+      this.zoomToFit();
     },
     componentDidUpdate: function (prevProps, prevState, rootNode) {
     },

@@ -93,21 +93,20 @@
             // transform: "translate("+x+","+y+")"
           },
           React.DOM.rect({
-            className: "group-box drag",
+            className: "group-box",
             x: x,
             y: y,
             rx: TheGraph.nodeRadius,
             ry: TheGraph.nodeRadius,
             width: this.props.maxX - this.props.minX + TheGraph.nodeSize*2,
-            height: this.props.maxY - this.props.minY + TheGraph.nodeSize*2,
-            fill: "yellow",
-            onMouseDown: this.onMouseDown
+            height: this.props.maxY - this.props.minY + TheGraph.nodeSize*2
           }),
           React.DOM.text({
-            className: "group-label",
+            className: "group-label drag",
             x: x + TheGraph.nodeRadius,
             y: y,
-            children: this.props.label
+            children: this.props.label,
+            onMouseDown: this.onMouseDown
           }),
           React.DOM.text({
             className: "group-description",
