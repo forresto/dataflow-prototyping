@@ -20,7 +20,8 @@
         tooltip: "",
         tooltipX: 0,
         tooltipY: 0,
-        tooltipVisible: true
+        tooltipVisible: false,
+        nodeContext: null
       };
     },
     zoomFactor: 0,
@@ -113,8 +114,10 @@
       window.removeEventListener("mousemove", this.onMouseMove);
       window.removeEventListener("mouseup", this.onMouseUp);
     },
-    onChangeHighlight: function (event) {
-      console.log(event);
+    showNodeContext: function (event) {
+      this.setState({
+        nodeContext: event.detail
+      });
     },
     changeTooltip: function (event) {
       var tooltip = event.detail.tooltip;
@@ -153,8 +156,9 @@
       this.getDOMNode().addEventListener("the-graph-tooltip-hide", this.hideTooltip);
 
       // Custom event listeners
-      this.getDOMNode().addEventListener("the-graph-node-highlight", this.onChangeHighlight);
-      // this.getDOMNode().addEventListener("the-graph-fit", this.onFit);
+      this.getDOMNode().addEventListener("the-graph-node-context", this.showNodeContext);
+      // this.getDOMNode().addEventListener("the-graph-edge-context", this.showEdgeContext);
+      // this.getDOMNode().addEventListener("the-graph-group-context", this.showGroupContext);
 
       // Start zoom from middle if zoom before mouse move
       this.mouseX = Math.floor( window.innerWidth/2 );
@@ -173,6 +177,11 @@
       var transform = "matrix("+sc+",0,0,"+sc+","+x+","+y+")";
 
       var scaleClass = sc > TheGraph.zbpBig ? "big" : ( sc > TheGraph.zbpNormal ? "normal" : "small");
+
+      var contextMenu;
+      if ( this.state.nodeContext  ) {
+        contextMenu = this.state.nodeContext.getContext();
+      }
 
       return React.DOM.div(
         {
@@ -202,11 +211,12 @@
               app: this
             })
           ),
-          // React.DOM.g(
-          //   {
-          //     className: "highlight"
-          //   }
-          // ),
+          React.DOM.g(
+            {
+              className: "context",
+              children: contextMenu
+            }
+          ),
           TheGraph.Tooltip({
             ref: "tooltip",
             x: this.state.tooltipX,

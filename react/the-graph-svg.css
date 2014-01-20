@@ -91,6 +91,17 @@ text {
   visibility: visible;
 }
 
+
+/* Context menus */
+.context-node-label {
+  text-anchor: middle;
+}
+.context-node path {
+  stroke-width: 40px;
+}
+
+
+
 .tooltip {
   opacity: 1.0;
 

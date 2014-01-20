@@ -165,9 +165,12 @@
 
         // Label
         var label = source.metadata.label + " " + connection.src.port.toUpperCase() + " -> " + 
-          connection.tgt.port.toUpperCase() + " " + target.metadata.label + "";
+          connection.tgt.port.toUpperCase() + " " + target.metadata.label;
+        var key = connection.src.process + "() " + connection.src.port.toUpperCase() + " -> " + 
+          connection.tgt.port.toUpperCase() + " " + connection.tgt.process + "()";
 
         return TheGraph.Edge({
+          key: key,
           sX: source.metadata.x + TheGraph.nodeSize,
           sY: source.metadata.y + sourcePort.y,
           tX: target.metadata.x,

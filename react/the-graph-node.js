@@ -25,7 +25,7 @@
       // window.addEventListener("mouseup", this.onMouseUp);
 
       // Right-click
-      this.getDOMNode().addEventListener("contextmenu", this.contextMenu);
+      this.getDOMNode().addEventListener("contextmenu", this.showContext);
     },
     mouseX: 0,
     mouseY: 0,
@@ -45,7 +45,7 @@
 
       if (event.button !== 0) {
         // Show context menu
-        this.highlight();
+        // this.showContext();
         return;
       }
 
@@ -55,13 +55,6 @@
       window.addEventListener("mousemove", this.onMouseMove);
       window.addEventListener("mouseup", this.onMouseUp);
 
-    },
-    highlight: function () {
-      var highlightEvent = new CustomEvent('the-graph-node-highlight', { 
-        'detail': this, 
-        'bubbles': true
-      });
-      this.getDOMNode().dispatchEvent(highlightEvent);
     },
     onMouseMove: function (event) {
       // Don't fire on graph
@@ -98,6 +91,30 @@
 
       window.removeEventListener("mousemove", this.onMouseMove);
       window.removeEventListener("mouseup", this.onMouseUp);
+    },
+    showContext: function (event) {
+      // Don't show native context menu
+      event.preventDefault();
+
+      var contextEvent = new CustomEvent('the-graph-node-context', { 
+        detail: this, 
+        bubbles: true
+      });
+      this.getDOMNode().dispatchEvent(contextEvent);
+    },
+    getContext: function () {
+      var scale = this.props.app.state.scale;
+      var appX = this.props.app.state.x;
+      var appY = this.props.app.state.y;
+      var x = (this.props.x + TheGraph.nodeSize/2) * scale + appX;
+      var y = (this.props.y + TheGraph.nodeSize/2) * scale + appY;
+      return TheGraph.NodeMenu({
+        key: "context." + this.props.key,
+        label: this.props.label,
+        process: this.props.process,
+        x: x,
+        y: y
+      });
     },
     getTooltipTrigger: function () {
       return this.getDOMNode();
@@ -206,82 +223,60 @@
 
 
 
-
-
   TheGraph.NodeMenu = React.createClass({
-    render: function() {
-      var metadata = this.props.process.metadata;
-
-      var label = metadata.label;
-      if (label === undefined || label === "") {
-        label = this.props.process.key;
+    radius: 50,
+    arcs: (function(){
+      var angleToX = function (percent, radius) {
+        return radius * Math.cos(2*Math.PI * percent);
+      };
+      var angleToY = function (percent, radius) {
+        return radius * Math.sin(2*Math.PI * percent);
+      };
+      var makeArcPath = function (startPercent, endPercent, radius) {
+        return [ 
+          "M", angleToX(startPercent, radius), angleToY(startPercent, radius),
+          "A", radius, radius, 0, 0, 0, angleToX(endPercent, radius), angleToY(endPercent, radius)
+        ].join(" ")
+      };
+      return {
+        label: makeArcPath(7/8, 5/8, 50),
+        ins: makeArcPath(5/8, 3/8, 50),
+        outs: makeArcPath(1/8, -1/8, 50),
+        remove: makeArcPath(3/8, 1/8, 50)
       }
-      var x = this.props.x;
-      var y = this.props.y;
-
-      // Ports
-      var keys, count, index;
-
-      // Inports
-      var inports = metadata.ports.inports;
-      keys = Object.keys(inports);
-      count = keys.length;
-      index = 0;
-      var inportViews = keys.map(function(key){
-        index++;
-        var info = inports[key];
-        info.y = TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * index);
-        return TheGraph.Port(info);
-      });
-
-      // Outports
-      var outports = metadata.ports.outports;
-      keys = Object.keys(outports);
-      count = keys.length;
-      index = 0;
-      var outportViews = keys.map(function(key){
-        index++;
-        var info = outports[key];
-        info.y = TheGraph.nodeRadius + (TheGraph.nodeSide / (count+1) * index);
-        return TheGraph.Port(info);
-      });
-
+    })(),
+    render: function() {
       return (
         React.DOM.g(
           {
-            className: "node",
-            name: this.props.key,
-            key: this.props.key,
-            transform: "translate("+x+","+y+")"
+            className: "context-node",
+            transform: "translate("+this.props.x+","+this.props.y+")"
           },
-          React.DOM.rect({
-            className: "node-rect drag",
-            name: this.props.key, // makes it draggable
-            width: TheGraph.nodeSize,
-            height: TheGraph.nodeSize,
-            rx: TheGraph.nodeRadius,
-            ry: TheGraph.nodeRadius
+          React.DOM.path({
+            className: "context-node-label-bg",
+            d: this.arcs.label,
+            stroke: "rgba(0,0,255,0.75)"
+          }),
+          React.DOM.path({
+            className: "context-node-delete-bg",
+            d: this.arcs.remove,
+            stroke: "rgba(255,0,0,0.75)"
+          }),
+          React.DOM.path({
+            className: "context-node-ins-bg",
+            d: this.arcs.ins,
+            stroke: "rgba(255,255,255,0.75)"
+          }),
+          React.DOM.path({
+            className: "context-node-outs-bg",
+            d: this.arcs.outs,
+            stroke: "rgba(255,255,255,0.75)"
           }),
           React.DOM.text({
-            className: "node-icon drag",
-            name: this.props.key, // makes it draggable
-            x: TheGraph.nodeSize/2,
-            y: TheGraph.nodeSize/2,
-            children: TheGraph.FONT_AWESOME[this.state.icon]
-          }),
-          React.DOM.g({
-            className: "inports",
-            children: inportViews
-          }),
-          React.DOM.g({
-            className: "outports",
-            children: outportViews
-          }),
-          React.DOM.text({
-            className: "node-label",
-            x: TheGraph.nodeSize/2,
-            y: TheGraph.nodeSize + 20,
-            children: label
+            className: "context-node-label",
+            x: 0,
+            y: 0 - this.radius,
+            children: this.props.label
           })
         )
       );
