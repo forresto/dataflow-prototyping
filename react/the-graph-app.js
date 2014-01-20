@@ -119,6 +119,11 @@
         nodeContext: event.detail
       });
     },
+    hideContext: function (event) {
+      this.setState({
+        nodeContext: null
+      });
+    },
     changeTooltip: function (event) {
       var tooltip = event.detail.tooltip;
 
@@ -178,9 +183,20 @@
 
       var scaleClass = sc > TheGraph.zbpBig ? "big" : ( sc > TheGraph.zbpNormal ? "normal" : "small");
 
-      var contextMenu;
-      if ( this.state.nodeContext  ) {
+      var contextMenu, contextModal;
+      if ( this.state.nodeContext ) {
         contextMenu = this.state.nodeContext.getContext();
+      }
+      if (contextMenu) {
+        contextModal = [ 
+          React.DOM.rect({
+            className: "context-modal-bg",
+            width: this.state.width,
+            height: this.state.height,
+            onMouseDown: this.hideContext
+          }),
+          contextMenu 
+        ];
       }
 
       return React.DOM.div(
@@ -214,7 +230,7 @@
           React.DOM.g(
             {
               className: "context",
-              children: contextMenu
+              children: contextModal
             }
           ),
           TheGraph.Tooltip({

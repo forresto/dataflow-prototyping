@@ -93,13 +93,30 @@ text {
 
 
 /* Context menus */
+.context-icon {
+  font-size: 30px;
+  fill: hsl(0, 0%, 100%);
+}
 .context-node-label {
   text-anchor: middle;
 }
-.context-node path {
+.context-arc {
   stroke-width: 40px;
 }
+.context-node-label-bg {
+  stroke: rgba(0,0,255,0.5);
+}
+.context-node-delete-bg {
+  stroke: rgba(255,0,0,0.5);
+}
+.context-node-ins-bg,
+.context-node-outs-bg {
+  stroke: rgba(255,255,255,0.5);
+}
 
+.context-modal-bg {
+  fill: rgba(0, 0, 0, 0.6);
+}
 
 
 .tooltip {
@@ -119,13 +136,14 @@ text {
   font-size: 10px;
 }
 
-.node-icon {
+.icon {
   font-family: 'FontAwesome';
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.node-icon {
   font-size: 40px;
   fill: hsl(0, 0%, 75%);
-  text-anchor: middle;
-  /*alignment-baseline: middle;*/
-  dominant-baseline: central;
 
   transition-property: font-size, fill;
   transition-duration: 0.5s,      0.3s;

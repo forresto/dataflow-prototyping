@@ -191,7 +191,7 @@
             ry: TheGraph.nodeRadius
           }),
           React.DOM.text({
-            className: "node-icon drag",
+            className: "icon node-icon drag",
             x: TheGraph.nodeSize/2,
             y: TheGraph.nodeSize/2,
             children: TheGraph.FONT_AWESOME[this.state.icon]
@@ -245,6 +245,13 @@
         remove: makeArcPath(3/8, 1/8, 50)
       }
     })(),
+    triggerRemove: function () {
+      var contextEvent = new CustomEvent('the-graph-node-remove', { 
+        detail: this, 
+        bubbles: true
+      });
+      this.getDOMNode().dispatchEvent(contextEvent);
+    },
     render: function() {
       return (
         React.DOM.g(
@@ -253,24 +260,27 @@
             transform: "translate("+this.props.x+","+this.props.y+")"
           },
           React.DOM.path({
-            className: "context-node-label-bg",
-            d: this.arcs.label,
-            stroke: "rgba(0,0,255,0.75)"
+            className: "context-arc context-node-label-bg",
+            d: this.arcs.label
+          }),
+          React.DOM.text({
+            className: "icon context-icon context-node-delete-icon",
+            x: 0,
+            y: this.radius,
+            children: TheGraph.FONT_AWESOME["trash-o"]
           }),
           React.DOM.path({
-            className: "context-node-delete-bg",
+            className: "context-arc context-node-delete-bg",
             d: this.arcs.remove,
-            stroke: "rgba(255,0,0,0.75)"
+            onClick: this.triggerRemove
           }),
           React.DOM.path({
-            className: "context-node-ins-bg",
-            d: this.arcs.ins,
-            stroke: "rgba(255,255,255,0.75)"
+            className: "context-arc context-node-ins-bg",
+            d: this.arcs.ins
           }),
           React.DOM.path({
-            className: "context-node-outs-bg",
-            d: this.arcs.outs,
-            stroke: "rgba(255,255,255,0.75)"
+            className: "context-arc context-node-outs-bg",
+            d: this.arcs.outs
           }),
           React.DOM.text({
             className: "context-node-label",
