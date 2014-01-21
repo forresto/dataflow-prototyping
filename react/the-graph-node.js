@@ -92,6 +92,13 @@
       window.removeEventListener("mousemove", this.onMouseMove);
       window.removeEventListener("mouseup", this.onMouseUp);
     },
+    triggerRemove: function () {
+      var contextEvent = new CustomEvent('the-graph-node-remove', { 
+        detail: this.props.key,
+        bubbles: true
+      });
+      this.getDOMNode().dispatchEvent(contextEvent);
+    },
     showContext: function (event) {
       // Don't show native context menu
       event.preventDefault();
@@ -111,6 +118,7 @@
       return TheGraph.NodeMenu({
         key: "context." + this.props.key,
         label: this.props.label,
+        node: this,
         process: this.props.process,
         x: x,
         y: y
@@ -246,7 +254,10 @@
       }
     })(),
     triggerRemove: function () {
-      var contextEvent = new CustomEvent('the-graph-node-remove', { 
+      this.props.node.triggerRemove();
+
+      // Hide self
+      var contextEvent = new CustomEvent('the-graph-context-hide', { 
         detail: this, 
         bubbles: true
       });

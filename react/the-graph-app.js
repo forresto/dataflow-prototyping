@@ -164,6 +164,7 @@
       this.getDOMNode().addEventListener("the-graph-node-context", this.showNodeContext);
       // this.getDOMNode().addEventListener("the-graph-edge-context", this.showEdgeContext);
       // this.getDOMNode().addEventListener("the-graph-group-context", this.showGroupContext);
+      this.getDOMNode().addEventListener("the-graph-context-hide", this.hideContext);
 
       // Start zoom from middle if zoom before mouse move
       this.mouseX = Math.floor( window.innerWidth/2 );
