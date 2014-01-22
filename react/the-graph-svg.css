@@ -19,6 +19,9 @@ svg {
 }
 .view {
 }
+.click {
+  cursor: pointer;
+}
 .drag {
   cursor: pointer;
 }

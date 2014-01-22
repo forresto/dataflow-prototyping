@@ -253,12 +253,16 @@
         remove: makeArcPath(3/8, 1/8, 50)
       }
     })(),
-    triggerRemove: function () {
+    stopPropagation: function (event) {
+      // Don't drag graph
+      event.stopPropagation();
+    },
+    triggerRemove: function (event) {
       this.props.node.triggerRemove();
 
-      // Hide self
+      // Hide self (overkill?)
       var contextEvent = new CustomEvent('the-graph-context-hide', { 
-        detail: this, 
+        detail: null, 
         bubbles: true
       });
       this.getDOMNode().dispatchEvent(contextEvent);
@@ -270,6 +274,18 @@
             className: "context-node",
             transform: "translate("+this.props.x+","+this.props.y+")"
           },
+          React.DOM.text({
+            className: "context-node-label",
+            x: 0,
+            y: 0 - this.radius - 25,
+            children: this.props.label
+          }),
+          React.DOM.text({
+            className: "icon context-icon context-node-info-icon",
+            x: 0,
+            y: 0-this.radius,
+            children: TheGraph.FONT_AWESOME["info-circle"]
+          }),
           React.DOM.path({
             className: "context-arc context-node-label-bg",
             d: this.arcs.label
@@ -281,8 +297,9 @@
             children: TheGraph.FONT_AWESOME["trash-o"]
           }),
           React.DOM.path({
-            className: "context-arc context-node-delete-bg",
+            className: "context-arc click context-node-delete-bg",
             d: this.arcs.remove,
+            onMouseDown: this.stopPropagation,
             onClick: this.triggerRemove
           }),
           React.DOM.path({
@@ -292,12 +309,6 @@
           React.DOM.path({
             className: "context-arc context-node-outs-bg",
             d: this.arcs.outs
-          }),
-          React.DOM.text({
-            className: "context-node-label",
-            x: 0,
-            y: 0 - this.radius,
-            children: this.props.label
           })
         )
       );

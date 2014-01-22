@@ -116,7 +116,8 @@
     },
     showNodeContext: function (event) {
       this.setState({
-        nodeContext: event.detail
+        nodeContext: event.detail,
+        tooltipVisible: false
       });
     },
     hideContext: function (event) {
