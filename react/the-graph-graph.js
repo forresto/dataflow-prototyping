@@ -81,20 +81,19 @@
     },
     removeNode: function (event) {
       var removeKey = event.detail;
-      var i;
 
       // Remove from groups
       var groups = this.state.graph.groups;
-      for (i=0; i<groups.length; i++) {
+      for (var i=0; i<groups.length; i++) {
         var nodes = groups[i].nodes;
-        var filtered = nodes.filter(function(member){
+        var filtered = nodes.filter( function (member) {
           return (member !== removeKey);
         });
         groups[i].nodes = filtered;
       }
 
       // Remove related edges
-      var remainingEdges = this.state.graph.connections.filter(function(edge){
+      var remainingEdges = this.state.graph.connections.filter( function (edge) {
         var remove = (edge.tgt.process === removeKey || (edge.src && edge.src.process && edge.src.process === removeKey));
         return !remove;
       });

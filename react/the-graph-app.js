@@ -5,7 +5,7 @@
 
 
   TheGraph.App = React.createClass({
-    minZoom: 0.04,
+    minZoom: 0.15,
     mixins: [TheGraph.mixins.FakeMouse],
     getInitialState: function() {
       // Autofit
