@@ -268,6 +268,48 @@
       this.getDOMNode().dispatchEvent(contextEvent);
     },
     render: function() {
+
+      if (this.props.process.metadata && this.props.process.metadata.ports) {
+        // HACK
+        var scale = this.props.node.props.app.state.scale;
+
+        var ports = this.props.process.metadata.ports;
+
+        var inkeys = Object.keys(ports.inports);
+        var h = inkeys.length * TheGraph.contextPortSize;
+        var i = 0;
+        var inports = inkeys.map( function (key) {
+          var inport = ports.inports[key];
+          var y = 0 - h/2 + i*TheGraph.contextPortSize + TheGraph.contextPortSize/2;
+          i++;
+          return TheGraph.PortMenu({
+            label: key,
+            isIn: true,
+            ox: (inport.x - TheGraph.nodeSize/2) * scale,
+            oy: (inport.y - TheGraph.nodeSize/2) * scale,
+            x: -100,
+            y: y
+          });
+        });
+
+        var outkeys = Object.keys(ports.outports);
+        h = outkeys.length * TheGraph.contextPortSize;
+        i = 0;
+        var outports = outkeys.map( function (key) {
+          var outport = ports.outports[key];
+          var y = 0 - h/2 + i*TheGraph.contextPortSize + TheGraph.contextPortSize/2;
+          i++;
+          return TheGraph.PortMenu({
+            label: key,
+            isIn: false,
+            ox: (outport.x - TheGraph.nodeSize/2) * scale,
+            oy: (outport.y - TheGraph.nodeSize/2) * scale,
+            x: 100,
+            y: y
+          });
+        });
+      }
+
       return (
         React.DOM.g(
           {
@@ -309,6 +351,14 @@
           React.DOM.path({
             className: "context-arc context-node-outs-bg",
             d: this.arcs.outs
+          }),
+          React.DOM.g({
+            className: "context-inports",
+            children: inports
+          }),
+          React.DOM.g({
+            className: "context-outports",
+            children: outports
           })
         )
       );

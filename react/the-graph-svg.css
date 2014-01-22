@@ -95,7 +95,7 @@ text {
 }
 
 
-/* Context menus */
+/* Context menu - node */
 .context-icon {
   font-size: 30px;
   fill: hsl(0, 0%, 100%);
@@ -118,7 +118,28 @@ text {
 }
 
 .context-modal-bg {
-  fill: rgba(0, 0, 0, 0.6);
+  fill: rgba(0,0,0,0.6);
+}
+
+/* Context menu - port */
+.context-port-bg {
+  fill: hsla(0,0%,50%,0.5);
+}
+.context-port-hole {
+  fill: rgba(255,255,255,0.5);
+  stroke: white;
+}
+.context-port-path {
+  stroke: white;
+}
+.context-port-label {
+  dominant-baseline: central;
+}
+.context-port-in .context-port-label {
+  text-anchor: end;
+}
+.context-port-out .context-port-label {
+  text-anchor: start;
 }
 
 

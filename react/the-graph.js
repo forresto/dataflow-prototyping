@@ -6,6 +6,8 @@
     nodeSize: 72,
     nodeRadius: 8,
     nodeSide: 56,
+    // Context menus
+    contextPortSize: 36,
     // Zoom breakpoints
     zbpBig: 1.2,
     zbpNormal: 0.4,
