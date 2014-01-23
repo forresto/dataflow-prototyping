@@ -24,6 +24,9 @@ svg {
 }
 .drag {
   cursor: pointer;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: grab;
 }
 .node-rect {
   fill: hsla(0, 0%, 0%, 0.75);
@@ -95,7 +98,12 @@ text {
 }
 
 
+
 /* Context menu - node */
+.context-modal-bg {
+  fill: rgba(0,0,0,0.5);
+}
+
 .context-icon {
   font-size: 30px;
   fill: hsl(0, 0%, 100%);
@@ -104,35 +112,38 @@ text {
   text-anchor: middle;
 }
 .context-arc {
-  stroke-width: 40px;
+  stroke-width: 72px;
+  stroke: hsla(211, 12%, 19%, 0.95);
 }
-.context-node-label-bg {
-  stroke: rgba(0,0,255,0.5);
+.context-slice:hover .context-arc,
+.context-arc:hover {
+  stroke: hsla(211, 12%, 40%, 0.95);
 }
-.context-node-delete-bg {
-  stroke: rgba(255,0,0,0.5);
+.context-circle {
+  stroke: hsl(0, 0%, 75%);
+  fill: none;
+  stroke-width: 2px;
 }
-.context-node-ins-bg,
-.context-node-outs-bg {
-  stroke: rgba(255,255,255,0.5);
+.context-circle-x {
+  stroke: hsl(0, 0%, 50%);
+  fill: none;
+  stroke-width: 1px;
 }
 
-.context-modal-bg {
-  fill: rgba(0,0,0,0.6);
-}
 
 /* Context menu - port */
 .context-port-bg {
-  fill: hsla(0,0%,50%,0.5);
+  fill: hsla(211, 12%, 19%, 0.95);
 }
 .context-port-hole {
-  fill: rgba(255,255,255,0.5);
-  stroke: white;
+  fill: hsla(211, 12%, 19%, 0.95);
+  stroke: hsl(0, 0%, 75%);
 }
 .context-port-path {
-  stroke: white;
+  stroke: hsl(0, 0%, 75%);
 }
 .context-port-label {
+  fill: hsl(0, 0%, 75%);
   dominant-baseline: central;
 }
 .context-port-in .context-port-label {

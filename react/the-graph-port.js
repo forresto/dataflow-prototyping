@@ -40,30 +40,30 @@
       return (
         React.DOM.g(
           {
-            className: "context-port context-port-"+(this.props.isIn ? "in" : "out")
+            className: "context-port click context-port-"+(this.props.isIn ? "in" : "out")
           },
           React.DOM.path({
             className: "context-port-path",
             d: path
           }),
-          React.DOM.rect({
-            className: "context-port-bg",
-            rx: TheGraph.nodeRadius,
-            ry: TheGraph.nodeRadius,
-            x: this.props.x + (this.props.isIn ? -100 : -20),
-            y: this.props.y - TheGraph.contextPortSize/2,
-            width: 120,
-            height: TheGraph.contextPortSize-1
-          }),
           React.DOM.circle({
             className: "context-port-hole",
             cx: this.props.x,
             cy: this.props.y,
-            r: 5
+            r: 10
+          }),
+          React.DOM.rect({
+            className: "context-port-bg",
+            rx: TheGraph.nodeRadius,
+            ry: TheGraph.nodeRadius,
+            x: this.props.x + (this.props.isIn ? -140 : 20),
+            y: this.props.y - TheGraph.contextPortSize/2,
+            width: 120,
+            height: TheGraph.contextPortSize-1
           }),
           React.DOM.text({
             className: "context-port-label",
-            x: this.props.x + (this.props.isIn ? -10 : 10),
+            x: this.props.x + (this.props.isIn ? -30 : 30),
             y: this.props.y,
             children: this.props.label
           })

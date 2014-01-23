@@ -229,19 +229,19 @@
               app: this
             })
           ),
-          React.DOM.g(
-            {
-              className: "context",
-              children: contextModal
-            }
-          ),
           TheGraph.Tooltip({
             ref: "tooltip",
             x: this.state.tooltipX,
             y: this.state.tooltipY,
             visible: this.state.tooltipVisible,
             label: this.state.tooltip
-          })
+          }),
+          React.DOM.g(
+            {
+              className: "context",
+              children: contextModal
+            }
+          )
         )
       );
     }

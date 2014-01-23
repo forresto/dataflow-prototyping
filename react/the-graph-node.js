@@ -232,7 +232,7 @@
 
 
   TheGraph.NodeMenu = React.createClass({
-    radius: 50,
+    radius: 72,
     arcs: (function(){
       var angleToX = function (percent, radius) {
         return radius * Math.cos(2*Math.PI * percent);
@@ -247,10 +247,10 @@
         ].join(" ")
       };
       return {
-        label: makeArcPath(7/8, 5/8, 50),
-        ins: makeArcPath(5/8, 3/8, 50),
-        outs: makeArcPath(1/8, -1/8, 50),
-        remove: makeArcPath(3/8, 1/8, 50)
+        label: makeArcPath(7/8, 5/8, 36),
+        ins: makeArcPath(5/8, 3/8, 36),
+        outs: makeArcPath(1/8, -1/8, 36),
+        remove: makeArcPath(3/8, 1/8, 36)
       }
     })(),
     stopPropagation: function (event) {
@@ -322,36 +322,6 @@
             y: 0 - this.radius - 25,
             children: this.props.label
           }),
-          React.DOM.text({
-            className: "icon context-icon context-node-info-icon",
-            x: 0,
-            y: 0-this.radius,
-            children: TheGraph.FONT_AWESOME["info-circle"]
-          }),
-          React.DOM.path({
-            className: "context-arc context-node-label-bg",
-            d: this.arcs.label
-          }),
-          React.DOM.text({
-            className: "icon context-icon context-node-delete-icon",
-            x: 0,
-            y: this.radius,
-            children: TheGraph.FONT_AWESOME["trash-o"]
-          }),
-          React.DOM.path({
-            className: "context-arc click context-node-delete-bg",
-            d: this.arcs.remove,
-            onMouseDown: this.stopPropagation,
-            onClick: this.triggerRemove
-          }),
-          React.DOM.path({
-            className: "context-arc context-node-ins-bg",
-            d: this.arcs.ins
-          }),
-          React.DOM.path({
-            className: "context-arc context-node-outs-bg",
-            d: this.arcs.outs
-          }),
           React.DOM.g({
             className: "context-inports",
             children: inports
@@ -359,6 +329,69 @@
           React.DOM.g({
             className: "context-outports",
             children: outports
+          }),
+          React.DOM.g(
+            {
+              className: "context-slice context-node-info"
+              // onMouseDown: this.stopPropagation,
+              // onClick: this.triggerRemove
+            },
+            React.DOM.path({
+              className: "context-arc context-node-info-bg",
+              d: this.arcs.label
+            }),
+            React.DOM.text({
+              className: "icon context-icon context-node-info-icon",
+              x: 0,
+              y: -48,
+              children: TheGraph.FONT_AWESOME["info-circle"]
+            })
+          ),
+          React.DOM.g(
+            {
+              className: "context-slice context-node-delete click",
+              onMouseDown: this.stopPropagation,
+              onClick: this.triggerRemove
+            },
+            React.DOM.path({
+              className: "context-arc context-node-delete-bg",
+              d: this.arcs.remove
+            }),
+            React.DOM.text({
+              className: "icon context-icon context-node-delete-icon",
+              x: 0,
+              y: 48,
+              children: TheGraph.FONT_AWESOME["trash-o"]
+            })
+          ),
+          React.DOM.path({
+            className: "context-arc context-node-ins-bg",
+            d: this.arcs.ins
+          }),
+          React.DOM.path({
+            className: "context-circle-x",
+            d: "M -51 -51 L 51 51 M -51 51 L 51 -51"
+          }),
+          React.DOM.path({
+            className: "context-arc context-node-outs-bg",
+            d: this.arcs.outs
+          }),
+          React.DOM.circle({
+            className: "context-circle",
+            r: this.radius
+          }),
+          React.DOM.rect({
+            className: "node-rect",
+            x: -24,
+            y: -24,
+            width: 48,
+            height: 48,
+            rx: TheGraph.nodeRadius,
+            ry: TheGraph.nodeRadius
+          }),
+          React.DOM.text({
+            className: "icon context-icon",
+            children: TheGraph.FONT_AWESOME[this.props.node.state.icon]
           })
         )
       );
