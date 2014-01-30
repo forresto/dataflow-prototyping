@@ -3,6 +3,7 @@
 
   var TheGraph = context.TheGraph;
 
+
   // Graph view
 
   TheGraph.Graph = React.createClass({
@@ -25,6 +26,7 @@
     componentDidMount: function () {
       this.getDOMNode().addEventListener("the-graph-node-move", this.markDirty);
       this.getDOMNode().addEventListener("the-graph-group-move", this.moveGroup);
+      this.getDOMNode().addEventListener("the-graph-node-remove", this.removeNode);
 
       // Listen to kieler custom event from dat.gui
       window.addEventListener('kieler', function (event) {
@@ -32,6 +34,15 @@
         this.autolayout(layoutOptions);
       }.bind(this));
     },
+    // triggerFit: function () {
+    //   // Zoom to fit
+    //   var fit = TheGraph.findFit(this.state.graph);
+    //   var fitEvent = new CustomEvent('the-graph-fit', { 
+    //     detail: fit, 
+    //     bubbles: true
+    //   });
+    //   this.getDOMNode().dispatchEvent(fitEvent);
+    // },
     moveGroup: function (event) {
       var graph = this.state.graph;
       var group = graph.groups[ event.detail.index ];
@@ -84,6 +95,31 @@
       }
       return process.metadata.ports;
     },
+    removeNode: function (event) {
+      var removeKey = event.detail;
+
+      // Remove from groups
+      var groups = this.state.graph.groups;
+      for (var i=0; i<groups.length; i++) {
+        var nodes = groups[i].nodes;
+        var filtered = nodes.filter( function (member) {
+          return (member !== removeKey);
+        });
+        groups[i].nodes = filtered;
+      }
+
+      // Remove related edges
+      var remainingEdges = this.state.graph.connections.filter( function (edge) {
+        var remove = (edge.tgt.process === removeKey || (edge.src && edge.src.process && edge.src.process === removeKey));
+        return !remove;
+      });
+      this.state.graph.connections = remainingEdges;
+
+      // Remove node
+      delete this.state.graph.processes[removeKey];
+
+      this.markDirty();
+    },
     dirty: false,
     markDirty: function () {
       this.setState({
@@ -125,47 +161,24 @@
       });
 
       // Groups
-      var index = -1;
+      var index = 0;
       var groups = graph.groups.map(function (group) {
         if (group.nodes.length < 1) {
           return;
         }
-        var minX = Infinity;
-        var minY = Infinity;
-        var maxX = -Infinity;
-        var maxY = -Infinity;
-
-        var nodes = group.nodes;
-        var len = nodes.length;
-        for (var i=0; i<len; i++) {
-          var key = nodes[i];
-          var process = graph.processes[ key ];
-          if (!process) {
-            throw new Error("Didn't find group member "+key+" when making group "+group.name);
-          }
-          if (process.metadata.x < minX) { minX = process.metadata.x; }
-          if (process.metadata.y < minY) { minY = process.metadata.y; }
-          if (process.metadata.x > maxX) { maxX = process.metadata.x; }
-          if (process.metadata.y > maxY) { maxY = process.metadata.y; }
-        }
-        if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) {
-          minX = 0;
-          minY = 0;
-          maxX = 0;
-          maxY = 0;
-          return;
-        }
-        index++;
-        return TheGraph.Group({
+        var limits = TheGraph.findMinMax(graph, group.nodes);
+        var g = TheGraph.Group({
           index: index,
-          minX: minX,
-          minY: minY,
-          maxX: maxX,
-          maxY: maxY,
+          minX: limits.minX,
+          minY: limits.minY,
+          maxX: limits.maxX,
+          maxY: limits.maxY,
           scale: self.props.scale,
           label: group.name,
           description: group.metadata.description
         });
+        index++;
+        return g;
       });
 
       // Edges
@@ -194,9 +207,12 @@
 
         // Label
         var label = source.metadata.label + " " + connection.src.port.toUpperCase() + " -> " + 
-          connection.tgt.port.toUpperCase() + " " + target.metadata.label + "";
+          connection.tgt.port.toUpperCase() + " " + target.metadata.label;
+        var key = connection.src.process + "() " + connection.src.port.toUpperCase() + " -> " + 
+          connection.tgt.port.toUpperCase() + " " + connection.tgt.process + "()";
 
         return TheGraph.Edge({
+          key: key,
           sX: source.metadata.x + TheGraph.nodeSize,
           sY: source.metadata.y + sourcePort.y,
           tX: target.metadata.x,

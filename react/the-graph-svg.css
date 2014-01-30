@@ -19,8 +19,14 @@ svg {
 }
 .view {
 }
+.click {
+  cursor: pointer;
+}
 .drag {
   cursor: pointer;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  cursor: grab;
 }
 .node-rect {
   fill: hsla(0, 0%, 0%, 0.75);
@@ -91,6 +97,63 @@ text {
   visibility: visible;
 }
 
+
+
+/* Context menu - node */
+.context-modal-bg {
+  fill: rgba(0,0,0,0.5);
+}
+
+.context-icon {
+  font-size: 30px;
+  fill: hsl(0, 0%, 100%);
+}
+.context-node-label {
+  text-anchor: middle;
+}
+.context-arc {
+  stroke-width: 72px;
+  stroke: hsla(211, 12%, 19%, 0.95);
+}
+.context-slice:hover .context-arc,
+.context-arc:hover {
+  stroke: hsla(211, 12%, 40%, 0.95);
+}
+.context-circle {
+  stroke: hsl(0, 0%, 75%);
+  fill: none;
+  stroke-width: 2px;
+}
+.context-circle-x {
+  stroke: hsl(0, 0%, 50%);
+  fill: none;
+  stroke-width: 1px;
+}
+
+
+/* Context menu - port */
+.context-port-bg {
+  fill: hsla(211, 12%, 19%, 0.95);
+}
+.context-port-hole {
+  fill: hsla(211, 12%, 19%, 0.95);
+  stroke: hsl(0, 0%, 75%);
+}
+.context-port-path {
+  stroke: hsl(0, 0%, 75%);
+}
+.context-port-label {
+  fill: hsl(0, 0%, 75%);
+  dominant-baseline: central;
+}
+.context-port-in .context-port-label {
+  text-anchor: end;
+}
+.context-port-out .context-port-label {
+  text-anchor: start;
+}
+
+
 .tooltip {
   opacity: 1.0;
 
@@ -108,13 +171,14 @@ text {
   font-size: 10px;
 }
 
-.node-icon {
+.icon {
   font-family: 'FontAwesome';
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.node-icon {
   font-size: 40px;
   fill: hsl(0, 0%, 75%);
-  text-anchor: middle;
-  /*alignment-baseline: middle;*/
-  dominant-baseline: central;
 
   transition-property: font-size, fill;
   transition-duration: 0.5s,      0.3s;
