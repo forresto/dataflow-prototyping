@@ -127,7 +127,9 @@
       });
       // mark edges too
       node.edges.map(function (edge) {
-        kGraph.edges[parseInt(edge.id.substr(1))] = null;
+        if (edge) {
+          kGraph.edges[parseInt(edge.id.substr(1))] = null;
+        }
       });
       // add node/subgraph to the graph
       kGraph.children.push(node);
