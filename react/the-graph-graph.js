@@ -14,14 +14,16 @@
       };
     },
     autolayout: function (layoutOptions) {
-      // xhr to kieler and update the graph
-      kieler(this.state.graph, layoutOptions, function (g) {
-        this.setState({graph: g});
-      }.bind(this));
-      this.dirty = true;
+      if (window.kieler !== undefined) {
+        window.kieler(this.state.graph, layoutOptions, function (g) {
+          this.setState({graph: g});
+          this.dirty = true;
+        }.bind(this));
+        this.dirty = true;
+      }
     },
     componentWillMount: function () {
-      this.autolayout();
+      this.autolayout({});
     },
     componentDidMount: function () {
       this.getDOMNode().addEventListener("the-graph-node-move", this.markDirty);
