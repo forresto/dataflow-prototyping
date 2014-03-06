@@ -109,46 +109,46 @@ function klayinit () {
     // FIXME: groups are not supported on klaygwt yet  
       
     // encode groups
-    // var groups = graph.groups;
-    // var countGroups = 0;
-    // groups.map(function (group) {
-    //   // create a node to use as a subgraph
-    //   var node = {id: 'group' + countGroups++, 
-    //               properties: {'de.cau.cs.kieler.layoutHierarchy': true,
-    //                            'de.cau.cs.kieler.klay.layered.nodeLayering': 'NETWORK_SIMPLEX',
-    //                            "nodePlace": "LINEAR_SEGMENTS"
-    //                           }, // FIXME: hack to get klaygwt working, remove ASAP!
-    //               children: [], 
-    //               edges: []};
-    //   // build the node/subgraph
-    //   group.nodes.map(function (n) {
-    //     node.children.push(kGraph.children[idx[n]]);
-    //     node.edges.push(kGraph.edges.filter(function (edge) {
-    //       if (edge) {
-    //         if ((edge.source === n) || (edge.target === n)) {
-    //           return edge;
-    //         }
-    //       }
-    //     })[0]);
-    //     // FIXME: guarantee that there's no undefined or null edge
-    //     node.edges.clean();
+    var groups = graph.groups;
+    var countGroups = 0;
+    groups.map(function (group) {
+      // create a node to use as a subgraph
+      var node = {id: 'group' + countGroups++, 
+                  properties: {'de.cau.cs.kieler.layoutHierarchy': true,
+                               'de.cau.cs.kieler.klay.layered.nodeLayering': 'NETWORK_SIMPLEX',
+                               "nodePlace": "LINEAR_SEGMENTS"
+                              }, // FIXME: hack to get klaygwt working, remove ASAP!
+                  children: [], 
+                  edges: []};
+      // build the node/subgraph
+      group.nodes.map(function (n) {
+        node.children.push(kGraph.children[idx[n]]);
+        node.edges.push(kGraph.edges.filter(function (edge) {
+          if (edge) {
+            if ((edge.source === n) || (edge.target === n)) {
+              return edge;
+            }
+          }
+        })[0]);
+        // FIXME: guarantee that there's no undefined or null edge
+        node.edges.clean();
 
-    //     // mark nodes inside the group to be removed from the graph
-    //     kGraph.children[idx[n]] = null;
+        // mark nodes inside the group to be removed from the graph
+        kGraph.children[idx[n]] = null;
 
-    //   });
-    //   // mark edges too
-    //   node.edges.map(function (edge) {
-    //     if (edge) {
-    //       kGraph.edges[parseInt(edge.id.substr(1))] = null;
-    //     }
-    //   });
-    //   // add node/subgraph to the graph
-    //   kGraph.children.push(node);
-    // });
+      });
+      // mark edges too
+      node.edges.map(function (edge) {
+        if (edge) {
+          kGraph.edges[parseInt(edge.id.substr(1))] = null;
+        }
+      });
+      // add node/subgraph to the graph
+      kGraph.children.push(node);
+    });
 
-    // // remove the nodes and edges from the graph, just preserve them inside the
-    // // subgraph/group
+    // remove the nodes and edges from the graph, just preserve them inside the
+    // subgraph/group
     kGraph.children.clean();
     kGraph.edges.clean();
     //console.log(JSON.stringify(kGraph));
