@@ -13,10 +13,28 @@
         graph: this.props.graph
       };
     },
+    autolayout: function (layoutOptions) {
+      if (window.kieler !== undefined) {
+        window.kieler(this.state.graph, layoutOptions, function (g) {
+          this.setState({graph: g});
+          this.dirty = true;
+        }.bind(this));
+        this.dirty = true;
+      }
+    },
+    componentWillMount: function () {
+      this.autolayout({});
+    },
     componentDidMount: function () {
       this.getDOMNode().addEventListener("the-graph-node-move", this.markDirty);
       this.getDOMNode().addEventListener("the-graph-group-move", this.moveGroup);
       this.getDOMNode().addEventListener("the-graph-node-remove", this.removeNode);
+
+      // Listen to kieler custom event from dat.gui
+      window.addEventListener('kieler', function (event) {
+        var layoutOptions = event.detail;
+        this.autolayout(layoutOptions);
+      }.bind(this));
     },
     // triggerFit: function () {
     //   // Zoom to fit

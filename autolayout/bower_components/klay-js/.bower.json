@@ -1,0 +1,32 @@
+{
+  "name": "klay-js",
+  "version": "0.0.5",
+  "homepage": "https://github.com/automata/klay-js",
+  "authors": [
+    "Vilson Vieira <vilson@void.cc>"
+  ],
+  "description": "Component to KIELER/KLay Layered JavaScript",
+  "main": "klay/klay.nocache.js",
+  "keywords": [
+    "autolayout",
+    "graph",
+    "gwt"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.0.5",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.5",
+    "commit": "008eeb01614728a95b641cc6b366f99bf994539f"
+  },
+  "_source": "git://github.com/automata/klay-js.git",
+  "_target": "~0.0.4",
+  "_originalSource": "klay-js"
+}

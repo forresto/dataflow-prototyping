@@ -20,6 +20,11 @@
   </style>
   <link rel="stylesheet" href="the-graph-svg.css">
 
+  <script src="//cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  
+  <script src="../klay/klay.nocache.js"></script>
+  <script src="../kieler-interface.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.8.0/react.js"></script>
 
   <script src="the-graph.js"></script>
@@ -87,6 +92,98 @@
       var script = document.createElement('script');
       script.src = 'photobooth.json.js';
       document.head.appendChild(script);
+
+      var KielerOptions = function () {
+        // standard Kieler options
+        this['de.cau.cs.kieler.alignment'] = 'AUTOMATIC';
+        this['de.cau.cs.kieler.aspectRatio'] = 1.6;
+        this['de.cau.cs.kieler.borderSpacing'] = 12;
+        this['de.cau.cs.kieler.debugMode'] = false;
+        this['de.cau.cs.kieler.direction'] = 'RIGHT';
+        this['de.cau.cs.kieler.edgeRouting'] = 'POLYLINE';
+        this['de.cau.cs.kieler.layoutHierarchy'] = true;
+        // this.nodeLabelPlacement = ???
+        this['de.cau.cs.kieler.portConstraints'] = 'UNDEFINED';
+        this['de.cau.cs.kieler.portLabelPlacement'] = 'OUTSIDE';
+        this['de.cau.cs.kieler.priority'] = 1;
+        this['de.cau.cs.kieler.randomSeed'] = 1;
+        this['de.cau.cs.kieler.separateConnComp'] = true;
+        // this.sizeConstraint = ???
+        //this['de.cau.cs.kieler.sizeOptions'] = 'DEFAULT_MINIMUM_SIZE';
+        this['de.cau.cs.kieler.spacing'] = 20.0;
+        
+        // klay layered options
+        this['de.cau.cs.kieler.klay.layered.crossMin'] = 'LAYER_SWEEP';        
+        this['de.cau.cs.kieler.klay.layered.cycleBreaking'] = 'GREEDY';
+        this['de.cau.cs.kieler.klay.layered.edgeSpacingFactor'] = 0.5;
+        this['de.cau.cs.kieler.klay.layered.feedBackEdges'] = false;
+        this['de.cau.cs.kieler.klay.layered.fixedAlignment'] = 'NONE';
+        this['de.cau.cs.kieler.klay.layered.inLayerSpacingFactor'] = 1;
+        //this['de.cau.cs.kieler.klay.layered.interactiveReferencePoint'] = 'CENTER';
+        //this['de.cau.cs.kieler.klay.layered.LabelSide'] = 'SMART';
+        this['de.cau.cs.kieler.klay.layered.layerConstraint'] = 'NONE';
+        this['de.cau.cs.kieler.klay.layered.mergePorts'] = false;
+        this['de.cau.cs.kieler.klay.layered.nodeLayering'] = 'NETWORK_SIMPLEX';
+        this['de.cau.cs.kieler.klay.layered.nodePlace'] = 'LINEAR_SEGMENTS'; // BRANDES_KOEPF is not working on klaygwt
+        this['de.cau.cs.kieler.klay.layered.thoroughness'] = 7;
+
+        this.apply = function () {
+          var that = {};
+          $.extend(that,this);
+          var event = new CustomEvent("kieler", { detail: that });
+          window.dispatchEvent(event);
+        };
+      };
+
+      var kielerOptions = new KielerOptions();
+
+      var gui = new dat.GUI();
+      var f1 = gui.addFolder('Standard Layout Options');
+      f1.add(kielerOptions, 'de.cau.cs.kieler.alignment', ['AUTOMATIC'], 'foo');
+      f1.add(kielerOptions, 'de.cau.cs.kieler.aspectRatio', 0.5, 10.0);
+      f1.add(kielerOptions, 'de.cau.cs.kieler.borderSpacing', 0, 100.0);
+      f1.add(kielerOptions, 'de.cau.cs.kieler.debugMode', false);
+      f1.add(kielerOptions, 'de.cau.cs.kieler.direction', ['RIGHT', 'DOWN']);
+      f1.add(kielerOptions, 'de.cau.cs.kieler.edgeRouting', ['POLYLINE']);
+      f1.add(kielerOptions, 'de.cau.cs.kieler.layoutHierarchy', true);
+      // f1.add(kielerOptions, 'nodeLabelPlacement', ???);
+      f1.add(kielerOptions, 'de.cau.cs.kieler.portConstraints', ['UNDEFINED']);
+      f1.add(kielerOptions, 'de.cau.cs.kieler.portLabelPlacement', ['OUTSIDE']);
+      f1.add(kielerOptions, 'de.cau.cs.kieler.priority', 1, 10);
+      f1.add(kielerOptions, 'de.cau.cs.kieler.randomSeed', 1, 100);
+      f1.add(kielerOptions, 'de.cau.cs.kieler.separateConnComp', true);
+      // f1.add(kielerOptions, 'sizeConstraint', ???);
+      //f1.add(kielerOptions, 'de.cau.cs.kieler.sizeOptions', ['DEFAULT_MINIMUM_SIZE']); // not working on klaygwt
+      f1.add(kielerOptions, 'de.cau.cs.kieler.spacing', 5, 100);
+      // for auto-apply
+      for (var i=0; i<f1.__controllers.length; i++) {
+        f1.__controllers[i].onChange(function (v) {
+          kielerOptions.apply();
+        });
+      }
+
+      var f2 = gui.addFolder('KLay Layered Options');
+      f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.crossMin', ['LAYER_SWEEP', 'INTERACTIVE']);
+      f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.cycleBreaking', ['GREEDY', 'INTERACTIVE']);
+      f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.edgeSpacingFactor', 0.5, 10);
+      f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.feedBackEdges', false);
+      f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.inLayerSpacingFactor', 0, 50);
+      //f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.interactiveReferencePoint', ['CENTER', 'TOP_LEFT']); // not working on klaygwt
+      //f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.LabelSide', ['SMART', 'ALWAYS_UP', 'ALWAYS_DOWN', 'DIRECTION_UP', 'DIRECTION_DOWN']); // not working on klaygwt
+      f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.layerConstraint', ['NONE', 'FIRST', 'FIRST_SEPARATE', 'LAST', 'LAST_SEPARATE']);
+      f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.mergePorts', false);
+      f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.nodeLayering', ['NETWORK_SIMPLEX', 'LONGEST_PATH', 'INTERACTIVE']);
+      f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.nodePlace', ['LINEAR_SEGMENTS', 'BRANDES_KOEPF', 'SIMPLE']);
+      f2.add(kielerOptions, 'de.cau.cs.kieler.klay.layered.thoroughness', 1, 20);
+      // for auto-apply                                         
+      for (var i=0; i<f2.__controllers.length; i++) {
+        f2.__controllers[i].onChange(function (v) {
+          kielerOptions.apply();
+        });
+      }
+      // auto-apply, so we dont' need this anymore...                                         
+      //gui.add(kielerOptions, 'apply');
+
     }
 
   })();
